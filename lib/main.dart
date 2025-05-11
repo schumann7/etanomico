@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 void main() {
   runApp(
@@ -324,39 +326,15 @@ class TelaPrecos extends StatefulWidget {
 }
 
 class _TelaPrecosState extends State<TelaPrecos> {
+  final List<String> lista = ["BR", "AL", "AM",	"CE",	"DF",	"ES",	"GO",	"MA",	"MT",	"MG",	"PR",	"PB",	"PA",	"PE",	"RS",	"RJ",	"SC",	"SP"];
+  String? _selectedItem;
+  String preco = "";
+  final _formKey = GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        toolbarHeight: 110,
-        centerTitle: true,
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Image.asset('assets/images/Logo_Etanômico.png', height: 60),
-            const SizedBox(width: 2),
-            Flexible(
-              child: Builder(
-                builder:
-                    (context) => Padding(
-                      padding: const EdgeInsets.only(top: 25),
-                      child: Text(
-                        'Etanômico',
-                        style: TextStyle(
-                          fontSize:
-                              MediaQuery.of(context).size.width < 400 ? 26 : 34,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 1,
-                        softWrap: false,
-                      ),
-                    ),
-              ),
-            ),
-          ],
-        ),
-      ),
+      appBar: AppBar(centerTitle: true, title: Text('Monitoramento de preços')),
     );
   }
 }
