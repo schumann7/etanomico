@@ -1,16 +1,9 @@
-# etanomico
+# Etanômico
+> Trabalho avaliativo da disciplina de Desenvolvimento para Dispositivos Móveis.
+<br>
 
-A new Flutter project.
+<br>
 
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+O **Etanômico** é um aplicativo desenvolvido em flutter, voltado para motoristas, que possui como funcionalidades uma calculadora que, baseado no preço da gasolina e do álcool, compara qual é a melhor opção para abastecer um carro flex considerando a relação preço/eficiência de ambos os combustíveis. 
+<br><br>
+Além disso, possui uma calculadora de consumo de combustível, para que o motorista calcule o consumo médio do seu veículo e o preço que ele gastou para realizar um trajeto e uma API para monitoramento do preço médio da gasolina, para que o motorista saiba se o preço da gasolina ou diesel no posto em que ele está abastecendo não está demasiadamente fora do normal.
