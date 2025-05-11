@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 void main() {
   runApp(
@@ -231,10 +233,77 @@ class TelaPrecos extends StatefulWidget {
 }
 
 class _TelaPrecosState extends State<TelaPrecos> {
+  final List<String> lista = ["BR", "AL", "AM",	"CE",	"DF",	"ES",	"GO",	"MA",	"MT",	"MG",	"PR",	"PB",	"PA",	"PE",	"RS",	"RJ",	"SC",	"SP"];
+  String? _selectedItem;
+  String preco = "";
+  final _formKey = GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(centerTitle: true, title: Text('Monitoramento de preços')),
+      appBar: AppBar(title: Text('Monitoramento de Preços'), actions: [Image.asset("assets/images/Logo_Etanômico.png")],),
+      body: Padding(
+        padding: EdgeInsets.all(16.0),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            children: [
+              DropdownButtonFormField<String>(
+                decoration: const InputDecoration(
+                  labelText: 'Selecione seu estado',
+                  border: OutlineInputBorder(),
+                ),
+                value: _selectedItem,
+                items: lista.map((item) {
+                  return DropdownMenuItem(
+                    value: item,
+                    child: Text(item),
+                  );
+                }).toList(),
+                onChanged: (value) {
+                  setState(() {
+                    _selectedItem = value;
+                  });
+                },
+                validator: (value) {
+                  if (value == null) {
+                    return 'Selecione um item';
+                  }
+                  return null;
+                },
+              ),
+              
+              const SizedBox(height: 20),
+              ElevatedButton(
+                child: const Text('Confirmar'),
+               onPressed: () async {
+                if (_selectedItem != null) {
+                  try {
+                    final response = await http.get(
+                      Uri.parse('https://combustivelapi.com.br/api/precos'),
+                      headers: {'Content-Type': 'application/json; charset=UTF-8'},
+                    );
+
+                    final json = jsonDecode(response.body);
+                    
+                    if (json['precos']['gasolina'].containsKey(_selectedItem!.toLowerCase())) {
+                      setState(() {
+                        preco = json['precos']['gasolina'][_selectedItem!.toLowerCase()].toString();
+                      });
+                    }
+                  } catch (e) {
+                    setState(() {
+                      preco = 'Ocorreu um erro na busca do preço';
+                    });
+                  }
+                }
+              },
+              ),
+              Text(preco != "" ? 'A gasolina em sua localização custa em média R\$$preco' : "", style: TextStyle(fontSize: 30.0), textAlign: TextAlign.center, )
+              ],
+          ),
+        ),
+      ),
     );
   }
 }
