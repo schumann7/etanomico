@@ -1,8 +1,5 @@
 # Etanômico
 > Trabalho avaliativo da disciplina de Desenvolvimento para Dispositivos Móveis.
-<br>
-
-<br>
 
 O **Etanômico** é um aplicativo desenvolvido em flutter, voltado para motoristas, que possui como funcionalidades uma calculadora que, baseado no preço da gasolina e do álcool, compara qual é a melhor opção para abastecer um carro flex considerando a relação preço/eficiência de ambos os combustíveis. 
 <br><br>
