@@ -357,6 +357,11 @@ class TelaConsumo extends StatefulWidget {
 }
 
 class _TelaConsumoState extends State<TelaConsumo> {
+  final TextEditingController _precoController = TextEditingController();
+  final TextEditingController _consumoController = TextEditingController();
+  final TextEditingController _distanciaController = TextEditingController();
+  String _resultado = "";
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -384,21 +389,19 @@ class _TelaConsumoState extends State<TelaConsumo> {
             const SizedBox(width: 3),
             Flexible(
               child: Builder(
-                builder:
-                    (context) => Padding(
-                      padding: const EdgeInsets.only(top: 35),
-                      child: Text(
-                        'Etanômico',
-                        style: TextStyle(
-                          fontSize:
-                              MediaQuery.of(context).size.width < 400 ? 26 : 34,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 1,
-                        softWrap: false,
-                      ),
+                builder: (context) => Padding(
+                  padding: const EdgeInsets.only(top: 35),
+                  child: Text(
+                    'Etanômico',
+                    style: TextStyle(
+                      fontSize: MediaQuery.of(context).size.width < 400 ? 26 : 34,
+                      fontWeight: FontWeight.bold,
                     ),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                    softWrap: false,
+                  ),
+                ),
               ),
             ),
           ],
@@ -407,6 +410,82 @@ class _TelaConsumoState extends State<TelaConsumo> {
       body: Container(
         decoration: const BoxDecoration(
           color: Color.fromARGB(247, 246, 244, 255),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: ListView(
+            children: [
+              const SizedBox(height: 15),
+              TextField(
+                controller: _precoController,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(
+                  labelText: "Preço por litro (R\$)",
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              const SizedBox(height: 30),
+              TextField(
+                controller: _consumoController,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(
+                  labelText: "Consumo (L)",
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              const SizedBox(height: 30),
+              TextField(
+                controller: _distanciaController,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(
+                  labelText: "Distância percorrida (km)",
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              const SizedBox(height: 30),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color.fromARGB(247, 246, 244, 255),
+                  side: const BorderSide(color: Colors.black, width: 1),
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 18,
+                    horizontal: 30,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                ),
+                child: const Text(
+                  'Calcular',
+                  style: TextStyle(color: Colors.black, fontSize: 15),
+                ),
+                onPressed: () {
+                  if (_precoController.text.isNotEmpty &&
+                      _consumoController.text.isNotEmpty &&
+                      _distanciaController.text.isNotEmpty) {
+                    double preco = double.parse(_precoController.text);
+                    double consumo = double.parse(_consumoController.text);
+                    double distancia = double.parse(_distanciaController.text);
+
+                    double kmPorLitro = distancia / consumo;
+                    double valorGasto = preco * consumo;
+
+                    setState(() {
+                        _resultado =
+                        "Valor gasto com combustível: R\$${valorGasto.toStringAsFixed(2).replaceAll('.', ',').replaceAllMapped(RegExp(r'(\d)(?=(\d{3})+(?!\d))'), (match) => '${match[1]}.')}\n"
+                        "Consumo médio: ${kmPorLitro.toStringAsFixed(2).replaceAll('.', ',')} km/l";
+                      });
+                  }
+                },
+              ),
+              const SizedBox(height: 20),
+              Text(
+                _resultado,
+                style: const TextStyle(fontSize: 19),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
         ),
       ),
     );
