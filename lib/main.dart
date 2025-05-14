@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -222,7 +221,6 @@ class TelaComparativo extends StatefulWidget {
 }
 
 class _TelaComparativoState extends State<TelaComparativo> {
-
   final TextEditingController _controllergasolina = TextEditingController();
   final TextEditingController _controlleretanol = TextEditingController();
   String _comparacao = "";
@@ -232,6 +230,7 @@ class _TelaComparativoState extends State<TelaComparativo> {
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: 110,
+        backgroundColor: const Color.fromARGB(247, 246, 244, 255),
         leading: IconButton(
           icon: const Icon(
             Icons.arrow_back_rounded,
@@ -253,75 +252,98 @@ class _TelaComparativoState extends State<TelaComparativo> {
             const SizedBox(width: 3),
             Flexible(
               child: Builder(
-                builder:
-                    (context) => Padding(
-                      padding: const EdgeInsets.only(top: 35),
-                      child: Text(
-                        'Etanômico',
-                        style: TextStyle(
-                          fontSize:
-                              MediaQuery.of(context).size.width < 400 ? 26 : 34,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 1,
-                        softWrap: false,
-                      ),
+                builder: (context) => Padding(
+                  padding: const EdgeInsets.only(top: 35),
+                  child: Text(
+                    'Etanômico',
+                    style: TextStyle(
+                      fontSize: MediaQuery.of(context).size.width < 400 ? 26 : 34,
+                      fontWeight: FontWeight.bold,
                     ),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                    softWrap: false,
+                  ),
+                ),
               ),
             ),
           ],
         ),
       ),
+      body: Container(
+        color: const Color.fromARGB(247, 246, 244, 255),
+        child: ListView(
+          padding: const EdgeInsets.all(16.0),
+          children: [
+            const SizedBox(height: 10),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: TextField(
+                controller: _controllergasolina,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(
+                  label: Text("Valor da gasolina"),
+                  border: OutlineInputBorder(),
+                ),
+              ),
+            ),
+            const SizedBox(height: 30),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: TextField(
+                controller: _controlleretanol,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(
+                  label: Text("Valor do etanol"),
+                  border: OutlineInputBorder(),
+                ),
+              ),
+            ),
+            const SizedBox(height: 30),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  side: const BorderSide(color: Colors.black, width: 1),
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 18,
+                    horizontal: 30,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  backgroundColor: const Color.fromARGB(247, 246, 244, 255),
+                ),
+                child: const Text(
+                  'Confirmar',
+                  style: TextStyle(color: Colors.black, fontSize: 15),
+                ),
+                onPressed: () {
+                  if (_controllergasolina.text != "" &&
+                      _controlleretanol.text != "") {
+                    double valorgasolina =
+                        double.parse(_controllergasolina.text);
+                    double valoretanol = double.parse(_controlleretanol.text);
 
-      body: ListView(
-        children: [
-          const SizedBox(height: 10),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: TextField(controller: _controllergasolina, keyboardType: TextInputType.number, decoration: InputDecoration(label: Text("Valor da gasolina"), border: OutlineInputBorder()),),
-          ),
-
-          const SizedBox(height: 30),
-
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: TextField(controller: _controlleretanol, keyboardType: TextInputType.number, decoration: InputDecoration(label: Text("Valor do etanol"), border: OutlineInputBorder()),),
-          ),
-
-          const SizedBox(height: 30),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: ElevatedButton(
-               style: ElevatedButton.styleFrom(
-                      side: const BorderSide(color: Colors.black, width: 1),
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 18,
-                        horizontal: 30,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                    ),
-              child: const Text('Confirmar', style: TextStyle(color: Colors.black, fontSize: 15),),
-              onPressed: (){
-                if(_controllergasolina.text != "" && _controlleretanol.text != ""){
-                  double _valorgasolina = double.parse(_controllergasolina.text);
-                  double _valoretanol = double.parse(_controlleretanol.text);
-            
-                  setState(() {
-                    _comparacao = _valoretanol <= _valorgasolina * 0.7 ? "o álcool" : "a gasolina";
-                  });
-                } else {
-                  
-                }
-              }),
-          ),
-          const SizedBox(height: 30),
-          Text(_controllergasolina.text + _controlleretanol.text == "" ? "" : "Nessa situação, o combustível mais favorável é $_comparacao",
-            style: const TextStyle(fontSize: 19),
-            textAlign: TextAlign.center,)
-        ],
+                    setState(() {
+                      _comparacao = valoretanol <= valorgasolina * 0.7
+                          ? "o álcool"
+                          : "a gasolina";
+                    });
+                  }
+                },
+              ),
+            ),
+            const SizedBox(height: 30),
+            Text(
+              _controllergasolina.text + _controlleretanol.text == ""
+                  ? ""
+                  : "Nessa situação, o combustível mais favorável é $_comparacao",
+              style: const TextStyle(fontSize: 19),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
       ),
     );
   }
