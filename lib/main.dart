@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -280,7 +281,8 @@ class _TelaComparativoState extends State<TelaComparativo> {
               padding: const EdgeInsets.all(16.0),
               child: TextField(
                 controller: _controllergasolina,
-                keyboardType: TextInputType.number,
+                keyboardType: TextInputType.numberWithOptions(decimal: true),
+                inputFormatters: [FilteringTextInputFormatter.allow(RegExp('[0-9.,]'))],
                 decoration: const InputDecoration(
                   label: Text("Valor da gasolina"),
                   border: OutlineInputBorder(),
@@ -292,7 +294,7 @@ class _TelaComparativoState extends State<TelaComparativo> {
               padding: const EdgeInsets.all(16.0),
               child: TextField(
                 controller: _controlleretanol,
-                keyboardType: TextInputType.number,
+                keyboardType: TextInputType.numberWithOptions(decimal: true),
                 decoration: const InputDecoration(
                   label: Text("Valor do etanol"),
                   border: OutlineInputBorder(),
@@ -321,14 +323,23 @@ class _TelaComparativoState extends State<TelaComparativo> {
                 onPressed: () {
                   if (_controllergasolina.text != "" &&
                       _controlleretanol.text != "") {
+
+                    String g = _controllergasolina.text;
+                    String e = _controlleretanol.text;
+
+                    g = g.replaceAll(",", ".");
+                    e = e.replaceAll(",", ".");
+
                     double valorgasolina =
-                        double.parse(_controllergasolina.text);
-                    double valoretanol = double.parse(_controlleretanol.text);
+                        double.parse(g);
+                    double valoretanol = double.parse(e);
 
                     setState(() {
                       _comparacao = valoretanol <= valorgasolina * 0.7
                           ? "o álcool"
                           : "a gasolina";
+                      
+                      FocusScope.of(context).requestFocus(FocusNode());
                     });
                   }
                 },
@@ -463,9 +474,18 @@ class _TelaConsumoState extends State<TelaConsumo> {
                   if (_precoController.text.isNotEmpty &&
                       _consumoController.text.isNotEmpty &&
                       _distanciaController.text.isNotEmpty) {
-                    double preco = double.parse(_precoController.text);
-                    double consumo = double.parse(_consumoController.text);
-                    double distancia = double.parse(_distanciaController.text);
+
+                    String p = _precoController.text;
+                    String c = _consumoController.text;
+                    String d = _distanciaController.text;
+
+                    p = p.replaceAll(",", ".");
+                    c = c.replaceAll(",", ".");
+                    d = d.replaceAll(",", ".");
+                    
+                    double preco = double.parse(p);
+                    double consumo = double.parse(c);
+                    double distancia = double.parse(d);
 
                     double kmPorLitro = distancia / consumo;
                     double valorGasto = preco * consumo;
@@ -474,6 +494,7 @@ class _TelaConsumoState extends State<TelaConsumo> {
                         _resultado =
                         "Valor gasto com combustível: R\$${valorGasto.toStringAsFixed(2).replaceAll('.', ',').replaceAllMapped(RegExp(r'(\d)(?=(\d{3})+(?!\d))'), (match) => '${match[1]}.')}\n"
                         "Consumo médio: ${kmPorLitro.toStringAsFixed(2).replaceAll('.', ',')} km/l";
+                        FocusScope.of(context).requestFocus(FocusNode());
                       });
                   }
                 },
