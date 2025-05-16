@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+//import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   runApp(
@@ -285,10 +286,13 @@ class _TelaComparativoState extends State<TelaComparativo> {
                 inputFormatters: [FilteringTextInputFormatter.allow(RegExp('[0-9.,]'))],
                 decoration: const InputDecoration(
                   label: Text("Valor da gasolina"),
-                  border: OutlineInputBorder(),
+                  border: OutlineInputBorder(),        
+                  labelStyle: TextStyle(color: Colors.black),
+                  focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.black),
                 ),
               ),
-            ),
+            )),
             const SizedBox(height: 30),
             Padding(
               padding: const EdgeInsets.all(16.0),
@@ -297,10 +301,13 @@ class _TelaComparativoState extends State<TelaComparativo> {
                 keyboardType: TextInputType.numberWithOptions(decimal: true),
                 decoration: const InputDecoration(
                   label: Text("Valor do etanol"),
+                  labelStyle: TextStyle(color: Colors.black),
                   border: OutlineInputBorder(),
+                  focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.black),
                 ),
               ),
-            ),
+            )),
             const SizedBox(height: 30),
             Padding(
               padding: const EdgeInsets.all(16.0),
@@ -432,7 +439,11 @@ class _TelaConsumoState extends State<TelaConsumo> {
                 keyboardType: TextInputType.number,
                 decoration: const InputDecoration(
                   labelText: "Preço por litro (R\$)",
+                  labelStyle: TextStyle(color: Colors.black),
                   border: OutlineInputBorder(),
+                  focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.black),
+                ),
                 ),
               ),
               const SizedBox(height: 30),
@@ -441,7 +452,11 @@ class _TelaConsumoState extends State<TelaConsumo> {
                 keyboardType: TextInputType.number,
                 decoration: const InputDecoration(
                   labelText: "Consumo (L)",
+                  labelStyle: TextStyle(color: Colors.black),
                   border: OutlineInputBorder(),
+                  focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.black),
+                ),
                 ),
               ),
               const SizedBox(height: 30),
@@ -450,7 +465,11 @@ class _TelaConsumoState extends State<TelaConsumo> {
                 keyboardType: TextInputType.number,
                 decoration: const InputDecoration(
                   labelText: "Distância percorrida (km)",
+                  labelStyle: TextStyle(color: Colors.black),
                   border: OutlineInputBorder(),
+                  focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.black),
+                ),
                 ),
               ),
               const SizedBox(height: 30),
@@ -697,3 +716,22 @@ class _TelaPrecosState extends State<TelaPrecos> {
     );
   }
 }
+
+// Deve ser usado em uma função async
+// final SharedPreferencesWithCache prefsWithCache =
+//     await SharedPreferencesWithCache.create(
+// cacheOptions: const SharedPreferencesWithCacheOptions(
+//     // When an allowlist is included, any keys that aren't included cannot be used.
+//     allowList: <String>{'repeat', 'action'},
+//   ),
+// );
+// await prefsWithCache.setBool('repeat', true);
+// await prefsWithCache.setString('action', 'Start');
+
+// final bool? repeat = prefsWithCache.getBool('repeat');
+// final String? action = prefsWithCache.getString('action');
+
+// await prefsWithCache.remove('repeat');
+
+// // Since the filter options are set at creation, they aren't needed during clear.
+// await prefsWithCache.clear();
