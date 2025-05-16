@@ -2,16 +2,64 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:intl/intl.dart';
+
+final NumberFormat moedaFormat = NumberFormat.currency(
+  locale: 'pt_BR',
+  symbol: 'R\$',
+);
+final NumberFormat inteiroFormat = NumberFormat.decimalPattern('pt_BR');
+
 //import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   runApp(
     MaterialApp(
       title: 'Etanômico',
-      home: const TelaInicial(),
+      home: Splash(),
       debugShowCheckedModeBanner: false,
     ),
   );
+}
+
+class Splash extends StatefulWidget {
+  const Splash({super.key});
+
+  @override
+  SplashState createState() => SplashState();
+}
+
+class SplashState extends State<Splash> {
+  @override
+  void initState() {
+    super.initState();
+    Future.delayed(Duration(seconds: 3), () {
+      if (!mounted) return;
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => TelaInicial()),
+      );
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color.fromARGB(247, 246, 244, 255), // Cor de fundo
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Image.asset(
+              'assets/images/splash-logo.png', // Sua imagem/logo
+              width: 300,
+              height: 300,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
 class TelaInicial extends StatelessWidget {
@@ -33,7 +81,9 @@ class TelaInicial extends StatelessWidget {
               child: Builder(
                 builder:
                     (context) => Padding(
-                      padding: const EdgeInsets.only(top: 35),
+                      padding: EdgeInsets.only(
+                        top: MediaQuery.of(context).size.height * 0.05,
+                      ),
                       child: Text(
                         'Etanômico',
                         style: TextStyle(
@@ -254,19 +304,23 @@ class _TelaComparativoState extends State<TelaComparativo> {
             const SizedBox(width: 3),
             Flexible(
               child: Builder(
-                builder: (context) => Padding(
-                  padding: const EdgeInsets.only(top: 35),
-                  child: Text(
-                    'Etanômico',
-                    style: TextStyle(
-                      fontSize: MediaQuery.of(context).size.width < 400 ? 26 : 34,
-                      fontWeight: FontWeight.bold,
+                builder:
+                    (context) => Padding(
+                      padding: EdgeInsets.only(
+                        top: MediaQuery.of(context).size.height * 0.05,
+                      ),
+                      child: Text(
+                        'Etanômico',
+                        style: TextStyle(
+                          fontSize:
+                              MediaQuery.of(context).size.width < 400 ? 26 : 34,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                        softWrap: false,
+                      ),
                     ),
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 1,
-                    softWrap: false,
-                  ),
-                ),
               ),
             ),
           ],
@@ -279,38 +333,69 @@ class _TelaComparativoState extends State<TelaComparativo> {
           children: [
             const SizedBox(height: 10),
             Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: EdgeInsets.symmetric(
+                horizontal: MediaQuery.of(context).size.width * 0.05,
+              ),
               child: TextField(
                 controller: _controllergasolina,
-                keyboardType: TextInputType.numberWithOptions(decimal: true),
-                inputFormatters: [FilteringTextInputFormatter.allow(RegExp('[0-9.,]'))],
+                keyboardType: TextInputType.number,
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 decoration: const InputDecoration(
                   label: Text("Valor da gasolina"),
-                  border: OutlineInputBorder(),        
+                  border: OutlineInputBorder(),
                   labelStyle: TextStyle(color: Colors.black),
                   focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.black),
+                    borderSide: BorderSide(color: Colors.black),
+                  ),
                 ),
+                onChanged: (value) {
+                  if (value.isNotEmpty) {
+                    double parsed = double.parse(value) / 100;
+                    _controllergasolina.value = TextEditingValue(
+                      text: moedaFormat.format(parsed),
+                      selection: TextSelection.collapsed(
+                        offset: moedaFormat.format(parsed).length,
+                      ),
+                    );
+                  }
+                },
               ),
-            )),
-            const SizedBox(height: 30),
+            ),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.07),
             Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: EdgeInsets.symmetric(
+                horizontal: MediaQuery.of(context).size.width * 0.05,
+              ),
               child: TextField(
                 controller: _controlleretanol,
-                keyboardType: TextInputType.numberWithOptions(decimal: true),
+                keyboardType: TextInputType.number,
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 decoration: const InputDecoration(
                   label: Text("Valor do etanol"),
                   labelStyle: TextStyle(color: Colors.black),
                   border: OutlineInputBorder(),
                   focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.black),
+                    borderSide: BorderSide(color: Colors.black),
+                  ),
                 ),
+                onChanged: (value) {
+                  if (value.isNotEmpty) {
+                    double parsed = double.parse(value) / 100;
+                    _controlleretanol.value = TextEditingValue(
+                      text: moedaFormat.format(parsed),
+                      selection: TextSelection.collapsed(
+                        offset: moedaFormat.format(parsed).length,
+                      ),
+                    );
+                  }
+                },
               ),
-            )),
-            const SizedBox(height: 30),
+            ),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.07),
             Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: EdgeInsets.symmetric(
+                horizontal: MediaQuery.of(context).size.width * 0.05,
+              ),
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   side: const BorderSide(color: Colors.black, width: 1),
@@ -330,31 +415,40 @@ class _TelaComparativoState extends State<TelaComparativo> {
                 onPressed: () {
                   if (_controllergasolina.text != "" &&
                       _controlleretanol.text != "") {
+                    String g =
+                        _controllergasolina.text
+                            .replaceAll("R\$", "")
+                            .replaceAll(".", "")
+                            .replaceAll(",", ".")
+                            .trim();
+                    String e =
+                        _controlleretanol.text
+                            .replaceAll("R\$", "")
+                            .replaceAll(".", "")
+                            .replaceAll(",", ".")
+                            .trim();
 
-                    String g = _controllergasolina.text;
-                    String e = _controlleretanol.text;
-
-                    g = g.replaceAll(",", ".");
-                    e = e.replaceAll(",", ".");
-
-                    double valorgasolina =
-                        double.parse(g);
-                    double valoretanol = double.parse(e);
+                    double valorgasolina = double.tryParse(g) ?? 0;
+                    double valoretanol = double.tryParse(e) ?? 0;
 
                     setState(() {
-                      _comparacao = valoretanol <= valorgasolina * 0.7
-                          ? "o álcool"
-                          : "a gasolina";
-                      
+                      if (valorgasolina > 0 && valoretanol > 0) {
+                        _comparacao =
+                            valoretanol <= valorgasolina * 0.7
+                                ? "o álcool"
+                                : "a gasolina";
+                      } else {
+                        _comparacao = "";
+                      }
                       FocusScope.of(context).requestFocus(FocusNode());
                     });
                   }
                 },
               ),
             ),
-            const SizedBox(height: 30),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.04),
             Text(
-              _controllergasolina.text + _controlleretanol.text == ""
+              _comparacao.isEmpty
                   ? ""
                   : "Nessa situação, o combustível mais favorável é $_comparacao",
               style: const TextStyle(fontSize: 19),
@@ -407,19 +501,23 @@ class _TelaConsumoState extends State<TelaConsumo> {
             const SizedBox(width: 3),
             Flexible(
               child: Builder(
-                builder: (context) => Padding(
-                  padding: const EdgeInsets.only(top: 35),
-                  child: Text(
-                    'Etanômico',
-                    style: TextStyle(
-                      fontSize: MediaQuery.of(context).size.width < 400 ? 26 : 34,
-                      fontWeight: FontWeight.bold,
+                builder:
+                    (context) => Padding(
+                      padding: EdgeInsets.only(
+                        top: MediaQuery.of(context).size.height * 0.05,
+                      ),
+                      child: Text(
+                        'Etanômico',
+                        style: TextStyle(
+                          fontSize:
+                              MediaQuery.of(context).size.width < 400 ? 26 : 34,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                        softWrap: false,
+                      ),
                     ),
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 1,
-                    softWrap: false,
-                  ),
-                ),
               ),
             ),
           ],
@@ -437,40 +535,76 @@ class _TelaConsumoState extends State<TelaConsumo> {
               TextField(
                 controller: _precoController,
                 keyboardType: TextInputType.number,
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 decoration: const InputDecoration(
                   labelText: "Preço por litro (R\$)",
                   labelStyle: TextStyle(color: Colors.black),
                   border: OutlineInputBorder(),
                   focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.black),
+                    borderSide: BorderSide(color: Colors.black),
+                  ),
                 ),
-                ),
+                onChanged: (value) {
+                  if (value.isNotEmpty) {
+                    double parsed = double.parse(value) / 100;
+                    _precoController.value = TextEditingValue(
+                      text: moedaFormat.format(parsed),
+                      selection: TextSelection.collapsed(
+                        offset: moedaFormat.format(parsed).length,
+                      ),
+                    );
+                  }
+                },
               ),
               const SizedBox(height: 30),
               TextField(
                 controller: _consumoController,
                 keyboardType: TextInputType.number,
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 decoration: const InputDecoration(
                   labelText: "Consumo (L)",
                   labelStyle: TextStyle(color: Colors.black),
                   border: OutlineInputBorder(),
                   focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.black),
+                    borderSide: BorderSide(color: Colors.black),
+                  ),
                 ),
-                ),
+                onChanged: (value) {
+                  if (value.isNotEmpty) {
+                    int parsed = int.parse(value.replaceAll('.', ''));
+                    _consumoController.value = TextEditingValue(
+                      text: inteiroFormat.format(parsed),
+                      selection: TextSelection.collapsed(
+                        offset: inteiroFormat.format(parsed).length,
+                      ),
+                    );
+                  }
+                },
               ),
               const SizedBox(height: 30),
               TextField(
                 controller: _distanciaController,
                 keyboardType: TextInputType.number,
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 decoration: const InputDecoration(
                   labelText: "Distância percorrida (km)",
                   labelStyle: TextStyle(color: Colors.black),
                   border: OutlineInputBorder(),
                   focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.black),
+                    borderSide: BorderSide(color: Colors.black),
+                  ),
                 ),
-                ),
+                onChanged: (value) {
+                  if (value.isNotEmpty) {
+                    int parsed = int.parse(value.replaceAll('.', ''));
+                    _distanciaController.value = TextEditingValue(
+                      text: inteiroFormat.format(parsed),
+                      selection: TextSelection.collapsed(
+                        offset: inteiroFormat.format(parsed).length,
+                      ),
+                    );
+                  }
+                },
               ),
               const SizedBox(height: 30),
               ElevatedButton(
@@ -493,15 +627,17 @@ class _TelaConsumoState extends State<TelaConsumo> {
                   if (_precoController.text.isNotEmpty &&
                       _consumoController.text.isNotEmpty &&
                       _distanciaController.text.isNotEmpty) {
+                    String p = _precoController.text
+                        .replaceAll("R\$", "")
+                        .replaceAll(".", "")
+                        .replaceAll(",", ".");
+                    String c = _consumoController.text
+                        .replaceAll(".", "")
+                        .replaceAll(",", ".");
+                    String d = _distanciaController.text
+                        .replaceAll(".", "")
+                        .replaceAll(",", ".");
 
-                    String p = _precoController.text;
-                    String c = _consumoController.text;
-                    String d = _distanciaController.text;
-
-                    p = p.replaceAll(",", ".");
-                    c = c.replaceAll(",", ".");
-                    d = d.replaceAll(",", ".");
-                    
                     double preco = double.parse(p);
                     double consumo = double.parse(c);
                     double distancia = double.parse(d);
@@ -510,11 +646,11 @@ class _TelaConsumoState extends State<TelaConsumo> {
                     double valorGasto = preco * consumo;
 
                     setState(() {
-                        _resultado =
-                        "Valor gasto com combustível: R\$${valorGasto.toStringAsFixed(2).replaceAll('.', ',').replaceAllMapped(RegExp(r'(\d)(?=(\d{3})+(?!\d))'), (match) => '${match[1]}.')}\n"
-                        "Consumo médio: ${kmPorLitro.toStringAsFixed(2).replaceAll('.', ',')} km/l";
-                        FocusScope.of(context).requestFocus(FocusNode());
-                      });
+                      _resultado =
+                          "Valor gasto com combustível: R\$${valorGasto.toStringAsFixed(2).replaceAll('.', ',').replaceAllMapped(RegExp(r'(\d)(?=(\d{3})+(?!\d))'), (match) => '${match[1]}.')}\n"
+                          "Consumo médio: ${kmPorLitro.toStringAsFixed(2).replaceAll('.', ',')} km/l";
+                      FocusScope.of(context).requestFocus(FocusNode());
+                    });
                   }
                 },
               ),
@@ -594,7 +730,9 @@ class _TelaPrecosState extends State<TelaPrecos> {
               child: Builder(
                 builder:
                     (context) => Padding(
-                      padding: const EdgeInsets.only(top: 35),
+                      padding: EdgeInsets.only(
+                        top: MediaQuery.of(context).size.height * 0.05,
+                      ),
                       child: Text(
                         'Etanômico',
                         style: TextStyle(
@@ -623,6 +761,10 @@ class _TelaPrecosState extends State<TelaPrecos> {
                 const SizedBox(height: 60),
                 DropdownButtonFormField<String>(
                   decoration: const InputDecoration(
+                    labelStyle: TextStyle(color: Colors.black),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.black),
+                    ),
                     labelText: 'Selecione seu estado',
                     border: OutlineInputBorder(),
                     filled: true,
