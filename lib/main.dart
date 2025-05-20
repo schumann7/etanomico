@@ -42,7 +42,7 @@ class _MyAppState extends State<MyApp> {
       darkTheme: temaEscuro,
       themeMode: tema,
       debugShowCheckedModeBanner: false,
-      home: TelaInicial(
+      home: Splash(
         tema: tema,
         trocarTema: trocarTema,
       ),
@@ -51,13 +51,26 @@ class _MyAppState extends State<MyApp> {
 }
 
 class Splash extends StatefulWidget {
-  const Splash({super.key});
+  final VoidCallback trocarTema;
+  final ThemeMode tema;
+  const Splash({super.key, required this.tema, required this.trocarTema});
 
   @override
   SplashState createState() => SplashState();
 }
 
 class SplashState extends State<Splash> {
+
+  ThemeMode tema = ThemeMode.light;
+  bool modoEscuro = false;
+
+  void trocarTema(){
+  setState(() {
+    tema = modoEscuro? ThemeMode.dark : ThemeMode.light;
+    modoEscuro = !modoEscuro;
+  });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -66,7 +79,7 @@ class SplashState extends State<Splash> {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => TelaInicial(
-        tema: ThemeMode.light, trocarTema: () {},)),
+        tema: widget.tema, trocarTema: widget.trocarTema,)),
       );
     });
   }
@@ -176,8 +189,9 @@ bool modoEscuro = false;
                       vertical: 18,
                       horizontal: 10,
                     ),
-                    backgroundColor: const Color.fromARGB(247, 246, 244, 255),
-                    side: const BorderSide(color: Colors.black, width: 1),
+                    backgroundColor: widget.tema == ThemeMode.dark? Color.fromARGB(255, 31, 31, 31) : Color.fromARGB(247, 246, 244, 255),
+                    side: BorderSide(color: widget.tema == ThemeMode.dark? Colors.white : Colors.black, width: 1),
+                    textStyle: TextStyle(color: widget.tema == ThemeMode.dark? Colors.white : Colors.black),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(15),
                     ),
@@ -193,18 +207,18 @@ bool modoEscuro = false;
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
-                    children: const [
+                    children: [
                       Icon(
                         Icons.calculate_outlined,
-                        color: Colors.black,
+                        color: widget.tema == ThemeMode.dark? Colors.white : Colors.black,
                         size: 22,
                       ),
-                      SizedBox(width: 10),
+                      const SizedBox(width: 10),
                       Flexible(
                         child: Text(
                           'Calculadora Álcool x Gasolina',
                           style: TextStyle(
-                            color: Colors.black,
+                            color: widget.tema == ThemeMode.dark? Colors.white : Colors.black,
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
                           ),
@@ -223,7 +237,8 @@ bool modoEscuro = false;
                       vertical: 18,
                       horizontal: 10,
                     ),
-                    side: const BorderSide(color: Colors.black, width: 1),
+                    backgroundColor: widget.tema == ThemeMode.dark? Color.fromARGB(255, 31, 31, 31) : Color.fromARGB(247, 246, 244, 255),
+                    side: BorderSide(color: widget.tema == ThemeMode.dark? Colors.white : Colors.black, width: 1),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(15),
                     ),
@@ -239,14 +254,14 @@ bool modoEscuro = false;
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
-                    children: const [
-                      Icon(Icons.speed_outlined, color: Colors.black, size: 22),
-                      SizedBox(width: 10),
+                    children: [
+                      Icon(Icons.speed_outlined, color: widget.tema == ThemeMode.dark? Colors.white : Colors.black, size: 22),
+                      const SizedBox(width: 10),
                       Flexible(
                         child: Text(
                           'Calculadora de Consumo',
                           style: TextStyle(
-                            color: Colors.black,
+                            color: widget.tema == ThemeMode.dark? Colors.white : Colors.black,
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
                           ),
@@ -265,8 +280,8 @@ bool modoEscuro = false;
                       vertical: 18,
                       horizontal: 10,
                     ),
-                    backgroundColor: const Color.fromARGB(247, 246, 244, 255),
-                    side: const BorderSide(color: Colors.black, width: 1),
+                    backgroundColor: widget.tema == ThemeMode.dark? Color.fromARGB(255, 31, 31, 31) : Color.fromARGB(247, 246, 244, 255),
+                    side: BorderSide(color: widget.tema == ThemeMode.dark? Colors.white : Colors.black, width: 1),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(15),
                     ),
@@ -282,18 +297,18 @@ bool modoEscuro = false;
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
-                    children: const [
+                    children: [
                       Icon(
                         Icons.trending_up_outlined,
-                        color: Colors.black,
+                        color: widget.tema == ThemeMode.dark? Colors.white : Colors.black,
                         size: 22,
                       ),
-                      SizedBox(width: 10),
+                      const SizedBox(width: 10),
                       Flexible(
                         child: Text(
                           'Monitoramento de Preços',
                           style: TextStyle(
-                            color: Colors.black,
+                            color: widget.tema == ThemeMode.dark? Colors.white : Colors.black,
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
                           ),
@@ -339,9 +354,9 @@ class _TelaComparativoState extends State<TelaComparativo> {
         actions: [IconButton(onPressed: widget.trocarTema,icon: Icon(modoEscuro ? Icons.light_mode : Icons.dark_mode),)],
         toolbarHeight: 110,
         leading: IconButton(
-          icon: const Icon(
+          icon: Icon(
             Icons.arrow_back_rounded,
-            color: Colors.black,
+            color: widget.tema == ThemeMode.dark ? Colors.white: Colors.black,
             size: 28,
           ),
           onPressed: () {
@@ -394,14 +409,12 @@ class _TelaComparativoState extends State<TelaComparativo> {
                 controller: _controllergasolina,
                 keyboardType: TextInputType.number,
                 inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                decoration: const InputDecoration(
-                  label: Text("Valor da gasolina"),
-                  filled: true,
-                  fillColor: Colors.white,
-                  border: OutlineInputBorder(),
-                  labelStyle: TextStyle(color: Colors.black),
+                decoration: InputDecoration(
+                  label: const Text("Valor da gasolina"),
+                  border: const OutlineInputBorder(),
+                  labelStyle: TextStyle(color: widget.tema == ThemeMode.dark ? Colors.white : Colors.black),
                   focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black),
+                    borderSide: BorderSide(color: widget.tema == ThemeMode.dark ? Colors.white : Colors.black),
                   ),
                 ),
                 onChanged: (value) {
@@ -426,14 +439,12 @@ class _TelaComparativoState extends State<TelaComparativo> {
                 controller: _controlleretanol,
                 keyboardType: TextInputType.number,
                 inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                decoration: const InputDecoration(
-                  label: Text("Valor do etanol"),
-                  filled: true,
-                  fillColor: Colors.white,
-                  labelStyle: TextStyle(color: Colors.black),
-                  border: OutlineInputBorder(),
+                decoration: InputDecoration(
+                  label: const Text("Valor do etanol"),
+                  labelStyle: TextStyle(color: widget.tema == ThemeMode.dark ? Colors.white : Colors.black),
+                  border: const OutlineInputBorder(),
                   focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black),
+                    borderSide: BorderSide(color: widget.tema == ThemeMode.dark ? Colors.white : Colors.black),
                   ),
                 ),
                 onChanged: (value) {
@@ -456,7 +467,7 @@ class _TelaComparativoState extends State<TelaComparativo> {
               ),
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  side: const BorderSide(color: Colors.black, width: 1),
+                  side: BorderSide(color: widget.tema == ThemeMode.dark? Colors.white : Colors.black, width: 1),
                   padding: const EdgeInsets.symmetric(
                     vertical: 18,
                     horizontal: 30,
@@ -464,11 +475,11 @@ class _TelaComparativoState extends State<TelaComparativo> {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(15),
                   ),
-                  backgroundColor: const Color.fromARGB(247, 246, 244, 255),
+                  backgroundColor: widget.tema == ThemeMode.dark? Color.fromARGB(255, 31, 31, 31) : Color.fromARGB(247, 246, 244, 255),
                 ),
-                child: const Text(
+                child: Text(
                   'Confirmar',
-                  style: TextStyle(color: Colors.black, fontSize: 15),
+                  style: TextStyle(color: widget.tema == ThemeMode.dark? Colors.white : Colors.black, fontSize: 15),
                 ),
                 onPressed: () {
                   if (_controllergasolina.text != "" &&
@@ -550,9 +561,9 @@ class _TelaConsumoState extends State<TelaConsumo> {
         actions: [IconButton(onPressed: widget.trocarTema, icon: Icon(modoEscuro ? Icons.light_mode : Icons.dark_mode))],
         toolbarHeight: 110,
         leading: IconButton(
-          icon: const Icon(
+          icon: Icon(
             Icons.arrow_back_rounded,
-            color: Colors.black,
+            color: widget.tema == ThemeMode.dark ? Colors.white: Colors.black,
             size: 28,
           ),
           onPressed: () {
@@ -602,14 +613,12 @@ class _TelaConsumoState extends State<TelaConsumo> {
                 controller: _precoController,
                 keyboardType: TextInputType.number,
                 inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: "Preço por litro (R\$)",
-                  filled: true,
-                  fillColor: Colors.white,
-                  labelStyle: TextStyle(color: Colors.black),
-                  border: OutlineInputBorder(),
+                  labelStyle: TextStyle(color: widget.tema == ThemeMode.dark ? Colors.white : Colors.black),
+                  border: const OutlineInputBorder(),
                   focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black),
+                    borderSide: BorderSide(color: widget.tema == ThemeMode.dark ? Colors.white : Colors.black),
                   ),
                 ),
                 onChanged: (value) {
@@ -629,14 +638,12 @@ class _TelaConsumoState extends State<TelaConsumo> {
                 controller: _consumoController,
                 keyboardType: TextInputType.number,
                 inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: "Consumo (L)",
-                  filled: true,
-                  fillColor: Colors.white,
-                  labelStyle: TextStyle(color: Colors.black),
-                  border: OutlineInputBorder(),
+                  labelStyle: TextStyle(color: widget.tema == ThemeMode.dark ? Colors.white : Colors.black),
+                  border: const OutlineInputBorder(),
                   focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black),
+                    borderSide: BorderSide(color: widget.tema == ThemeMode.dark ? Colors.white : Colors.black),
                   ),
                 ),
                 onChanged: (value) {
@@ -656,14 +663,12 @@ class _TelaConsumoState extends State<TelaConsumo> {
                 controller: _distanciaController,
                 keyboardType: TextInputType.number,
                 inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: "Distância percorrida (km)",
-                  filled: true,
-                  fillColor: Colors.white,
-                  labelStyle: TextStyle(color: Colors.black),
-                  border: OutlineInputBorder(),
+                  labelStyle: TextStyle(color: widget.tema == ThemeMode.dark ? Colors.white : Colors.black),
+                  border: const OutlineInputBorder(),
                   focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black),
+                    borderSide: BorderSide(color: widget.tema == ThemeMode.dark ? Colors.white : Colors.black),
                   ),
                 ),
                 onChanged: (value) {
@@ -681,7 +686,7 @@ class _TelaConsumoState extends State<TelaConsumo> {
               const SizedBox(height: 30),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  side: const BorderSide(color: Colors.black, width: 1),
+                  side: BorderSide(color: widget.tema == ThemeMode.dark ? Colors.white: Colors.black, width: 1),
                   padding: const EdgeInsets.symmetric(
                     vertical: 18,
                     horizontal: 30,
@@ -689,10 +694,11 @@ class _TelaConsumoState extends State<TelaConsumo> {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(15),
                   ),
+                  backgroundColor: widget.tema == ThemeMode.dark ? const Color.fromARGB(255, 31, 31, 31): const Color.fromARGB(247, 246, 244, 255),
                 ),
-                child: const Text(
+                child: Text(
                   'Calcular',
-                  style: TextStyle(color: Colors.black, fontSize: 15),
+                  style: TextStyle(color: widget.tema == ThemeMode.dark ? Colors.white: Colors.black, fontSize: 15),
                 ),
                 onPressed: () {
                   if (_precoController.text.isNotEmpty &&
@@ -771,7 +777,7 @@ class _TelaPrecosState extends State<TelaPrecos> {
   ];
   String? _selectedItem;
   String preco = "indefinido";
-  String retorno = "";
+  String retorno = " ";
   final _formKey = GlobalKey<FormState>();
 
 ThemeMode tema = ThemeMode.light;
@@ -791,9 +797,9 @@ bool modoEscuro = false;
         actions: [IconButton(onPressed: widget.trocarTema, icon: Icon(modoEscuro ? Icons.light_mode : Icons.dark_mode))],
         toolbarHeight: 110,
         leading: IconButton(
-          icon: const Icon(
+          icon: Icon(
             Icons.arrow_back_rounded,
-            color: Colors.black,
+            color: widget.tema == ThemeMode.dark ? Colors.white: Colors.black,
             size: 28,
           ),
           onPressed: () {
@@ -842,15 +848,13 @@ bool modoEscuro = false;
               children: [
                 const SizedBox(height: 60),
                 DropdownButtonFormField<String>(
-                  decoration: const InputDecoration(
-                    labelStyle: TextStyle(color: Colors.black),
+                  decoration: InputDecoration(
+                    labelStyle: TextStyle(color: widget.tema == ThemeMode.dark ? Colors.white : Colors.black),
                     focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.black),
+                      borderSide: BorderSide(color: widget.tema == ThemeMode.dark ? Colors.white : Colors.black),
                     ),
                     labelText: 'Selecione seu estado',
-                    border: OutlineInputBorder(),
-                    filled: true,
-                    fillColor: Color.fromARGB(247, 246, 244, 255),
+                    border: const OutlineInputBorder(),
                   ),
                   value: _selectedItem,
                   items:
@@ -859,7 +863,7 @@ bool modoEscuro = false;
                           value: item,
                           child: Text(
                             item,
-                            style: TextStyle(color: widget.tema == ThemeMode.dark ? Colors.grey : Colors.black),
+                            style: TextStyle(color: widget.tema == ThemeMode.dark ? Colors.white : Colors.black),
                           ),
                         );
                       }).toList(),
@@ -874,12 +878,12 @@ bool modoEscuro = false;
                     }
                     return null;
                   },
-                  dropdownColor: widget.tema == ThemeMode.dark ? const Color.fromARGB(255, 37, 34, 34): const Color.fromARGB(247, 246, 244, 255),
+                  dropdownColor: widget.tema == ThemeMode.dark ? const Color.fromARGB(255, 31, 31, 31): const Color.fromARGB(247, 246, 244, 255),
                 ),
                 const SizedBox(height: 30),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    side: const BorderSide(color: Colors.black, width: 1),
+                    side: BorderSide(color: widget.tema == ThemeMode.dark? Colors.white : Colors.black, width: 1),
                     padding: const EdgeInsets.symmetric(
                       vertical: 18,
                       horizontal: 30,
@@ -887,10 +891,11 @@ bool modoEscuro = false;
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(15),
                     ),
+                    backgroundColor: widget.tema == ThemeMode.dark ? const Color.fromARGB(255, 31, 31, 31): const Color.fromARGB(247, 246, 244, 255), 
                   ),
-                  child: const Text(
+                  child: Text(
                     'Confirmar',
-                    style: TextStyle(color: Colors.black, fontSize: 15),
+                    style: TextStyle(color: widget.tema == ThemeMode.dark? Colors.white : Colors.black, fontSize: 15),
                   ),
                   onPressed: () async {
                     setState(() {
@@ -929,9 +934,9 @@ bool modoEscuro = false;
                   },
                 ),
                 const SizedBox(height: 30),
-                preco == "" ? const CircularProgressIndicator(padding: EdgeInsets.all(150),)
+                preco == "" ? SizedBox(height: 200.0, width: 200.0,child: Center(child: CircularProgressIndicator()),)
                 :Text(
-                  retorno != "" ? retorno : "",
+                  retorno != " " ? retorno : "",
                   style: const TextStyle(fontSize: 19),
                   textAlign: TextAlign.center,
                 ),
@@ -946,16 +951,20 @@ bool modoEscuro = false;
 
 ThemeData temaEscuro = ThemeData(
   appBarTheme: AppBarTheme(
-    backgroundColor: const Color.fromARGB(255, 37, 34, 34),
+    backgroundColor: const Color.fromARGB(255, 31, 31, 31),
     titleTextStyle: TextStyle(color: Colors.white),
     actionsIconTheme: IconThemeData(color: Colors.white)
   ),
   textTheme: const TextTheme(
     bodySmall: TextStyle(color: Colors.white),
     bodyMedium: TextStyle(color: Colors.white),
+    bodyLarge: TextStyle(color: Colors.white),
+    labelSmall: TextStyle(color: Colors.white),
+    labelMedium: TextStyle(color: Colors.white),
+    labelLarge: TextStyle(color: Colors.white),
   ),
-  scaffoldBackgroundColor: const Color.fromARGB(255, 37, 34, 34),
-  buttonTheme: ButtonThemeData(buttonColor: const Color.fromARGB(255, 37, 34, 34),)
+  scaffoldBackgroundColor: const Color.fromARGB(255, 31, 31, 31),
+  buttonTheme: ButtonThemeData(buttonColor: const Color.fromARGB(255, 37, 34, 34),),
 );
 
 ThemeData temaClaro = ThemeData(
