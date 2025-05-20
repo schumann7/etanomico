@@ -13,13 +13,41 @@ final NumberFormat inteiroFormat = NumberFormat.decimalPattern('pt_BR');
 //import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
-  runApp(
-    MaterialApp(
+  runApp(MyApp());
+}
+
+class MyApp extends StatefulWidget {
+  const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  ThemeMode tema = ThemeMode.light;
+  bool modoEscuro = false;
+
+  void trocarTema() {
+    setState(() {
+      modoEscuro = !modoEscuro;
+      tema = modoEscuro ? ThemeMode.dark : ThemeMode.light;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
       title: 'Etanômico',
-      home: Splash(),
+      theme: temaClaro,
+      darkTheme: temaEscuro,
+      themeMode: tema,
       debugShowCheckedModeBanner: false,
-    ),
-  );
+      home: TelaInicial(
+        tema: tema,
+        trocarTema: trocarTema,
+      ),
+    );
+  }
 }
 
 class Splash extends StatefulWidget {
@@ -37,7 +65,8 @@ class SplashState extends State<Splash> {
       if (!mounted) return;
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => TelaInicial()),
+        MaterialPageRoute(builder: (context) => TelaInicial(
+        tema: ThemeMode.light, trocarTema: () {},)),
       );
     });
   }
@@ -45,13 +74,12 @@ class SplashState extends State<Splash> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(247, 246, 244, 255), // Cor de fundo
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Image.asset(
-              'assets/images/splash-logo.png', // Sua imagem/logo
+              'assets/images/splash-logo.png',
               width: 300,
               height: 300,
             ),
@@ -62,43 +90,68 @@ class SplashState extends State<Splash> {
   }
 }
 
-class TelaInicial extends StatelessWidget {
-  const TelaInicial({super.key});
+class TelaInicial extends StatefulWidget {
+  final VoidCallback trocarTema;
+  final ThemeMode tema;
+
+  const TelaInicial({
+    super.key,
+    required this.trocarTema,
+    required this.tema,
+  });
+
+  @override
+  State<TelaInicial> createState() => _TelaInicialState();
+}
+
+class _TelaInicialState extends State<TelaInicial> {
+
+ThemeMode tema = ThemeMode.light;
+bool modoEscuro = false;
+
+  void trocarTema(){
+  setState(() {
+    tema = modoEscuro? ThemeMode.dark : ThemeMode.light;
+    modoEscuro = !modoEscuro;
+  });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        actions: [IconButton(onPressed: widget.trocarTema, icon: Icon(modoEscuro ? Icons.light_mode : Icons.dark_mode))],
         toolbarHeight: 110,
-        backgroundColor: const Color.fromARGB(247, 246, 244, 255),
-        centerTitle: true,
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Image.asset('assets/images/Logo_Etanômico.png', height: 60),
+        title: Center(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const SizedBox(width: 50,),
+              Image.asset('assets/images/Logo_Etanômico.png', height: 60),
             const SizedBox(width: 3),
-            Flexible(
-              child: Builder(
-                builder:
-                    (context) => Padding(
-                      padding: EdgeInsets.only(
-                        top: MediaQuery.of(context).size.height * 0.05,
-                      ),
-                      child: Text(
-                        'Etanômico',
-                        style: TextStyle(
-                          fontSize:
-                              MediaQuery.of(context).size.width < 400 ? 26 : 34,
-                          fontWeight: FontWeight.bold,
+              Flexible(
+                child: Builder(
+                  builder:
+                      (context) => Padding(
+                        padding: EdgeInsets.only(
+                          top: MediaQuery.of(context).size.height * 0.05,
                         ),
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 1,
-                        softWrap: false,
+                        child: Text(
+                          'Etanômico',
+                          style: TextStyle(
+                            fontSize:
+                                MediaQuery.of(context).size.width < 400 ? 26 : 34,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
+                          softWrap: false,
+                        ),
                       ),
-                    ),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
       body: Builder(
@@ -110,9 +163,6 @@ class TelaInicial extends StatelessWidget {
           double espacamentoEntreBotoes = altura * 0.05;
 
           return Container(
-            decoration: BoxDecoration(
-              color: const Color.fromARGB(247, 246, 244, 255),
-            ),
             child: ListView(
               padding: EdgeInsets.only(
                 left: paddingLateral,
@@ -136,7 +186,7 @@ class TelaInicial extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const TelaComparativo(),
+                        builder: (context) => TelaComparativo(tema: widget.tema, trocarTema: widget.trocarTema,),
                       ),
                     );
                   },
@@ -173,7 +223,6 @@ class TelaInicial extends StatelessWidget {
                       vertical: 18,
                       horizontal: 10,
                     ),
-                    backgroundColor: const Color.fromARGB(247, 246, 244, 255),
                     side: const BorderSide(color: Colors.black, width: 1),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(15),
@@ -183,7 +232,7 @@ class TelaInicial extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const TelaConsumo(),
+                        builder: (context) => TelaConsumo(tema: widget.tema, trocarTema: widget.trocarTema),
                       ),
                     );
                   },
@@ -226,7 +275,7 @@ class TelaInicial extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const TelaPrecos(),
+                        builder: (context) => TelaPrecos(tema: widget.tema, trocarTema: widget.trocarTema),
                       ),
                     );
                   },
@@ -266,23 +315,29 @@ class TelaInicial extends StatelessWidget {
 }
 
 class TelaComparativo extends StatefulWidget {
-  const TelaComparativo({super.key});
+  final VoidCallback trocarTema;
+  final ThemeMode tema;
+
+  const TelaComparativo({super.key, required this.tema, required this.trocarTema});
 
   @override
   State<TelaComparativo> createState() => _TelaComparativoState();
 }
 
 class _TelaComparativoState extends State<TelaComparativo> {
+
   final TextEditingController _controllergasolina = TextEditingController();
   final TextEditingController _controlleretanol = TextEditingController();
   String _comparacao = "";
+
+  bool get modoEscuro => widget.tema == ThemeMode.dark;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        actions: [IconButton(onPressed: widget.trocarTema,icon: Icon(modoEscuro ? Icons.light_mode : Icons.dark_mode),)],
         toolbarHeight: 110,
-        backgroundColor: const Color.fromARGB(247, 246, 244, 255),
         leading: IconButton(
           icon: const Icon(
             Icons.arrow_back_rounded,
@@ -327,7 +382,6 @@ class _TelaComparativoState extends State<TelaComparativo> {
         ),
       ),
       body: Container(
-        color: const Color.fromARGB(247, 246, 244, 255),
         child: ListView(
           padding: const EdgeInsets.all(16.0),
           children: [
@@ -342,6 +396,8 @@ class _TelaComparativoState extends State<TelaComparativo> {
                 inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 decoration: const InputDecoration(
                   label: Text("Valor da gasolina"),
+                  filled: true,
+                  fillColor: Colors.white,
                   border: OutlineInputBorder(),
                   labelStyle: TextStyle(color: Colors.black),
                   focusedBorder: OutlineInputBorder(
@@ -372,6 +428,8 @@ class _TelaComparativoState extends State<TelaComparativo> {
                 inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 decoration: const InputDecoration(
                   label: Text("Valor do etanol"),
+                  filled: true,
+                  fillColor: Colors.white,
                   labelStyle: TextStyle(color: Colors.black),
                   border: OutlineInputBorder(),
                   focusedBorder: OutlineInputBorder(
@@ -462,7 +520,9 @@ class _TelaComparativoState extends State<TelaComparativo> {
 }
 
 class TelaConsumo extends StatefulWidget {
-  const TelaConsumo({super.key});
+  const TelaConsumo({super.key, required this.tema, required this.trocarTema});
+  final ThemeMode tema;
+  final VoidCallback trocarTema; 
 
   @override
   State<TelaConsumo> createState() => _TelaConsumoState();
@@ -474,12 +534,21 @@ class _TelaConsumoState extends State<TelaConsumo> {
   final TextEditingController _distanciaController = TextEditingController();
   String _resultado = "";
 
+  bool modoEscuro = false;
+  ThemeMode tema = ThemeMode.light;
+  void trocarTema(){
+  setState(() {
+    tema = modoEscuro? ThemeMode.dark : ThemeMode.light;
+    modoEscuro = !modoEscuro;
+  });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        actions: [IconButton(onPressed: widget.trocarTema, icon: Icon(modoEscuro ? Icons.light_mode : Icons.dark_mode))],
         toolbarHeight: 110,
-        backgroundColor: const Color.fromARGB(247, 246, 244, 255),
         leading: IconButton(
           icon: const Icon(
             Icons.arrow_back_rounded,
@@ -524,9 +593,6 @@ class _TelaConsumoState extends State<TelaConsumo> {
         ),
       ),
       body: Container(
-        decoration: const BoxDecoration(
-          color: Color.fromARGB(247, 246, 244, 255),
-        ),
         child: Padding(
           padding: const EdgeInsets.all(20.0),
           child: ListView(
@@ -538,6 +604,8 @@ class _TelaConsumoState extends State<TelaConsumo> {
                 inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 decoration: const InputDecoration(
                   labelText: "Preço por litro (R\$)",
+                  filled: true,
+                  fillColor: Colors.white,
                   labelStyle: TextStyle(color: Colors.black),
                   border: OutlineInputBorder(),
                   focusedBorder: OutlineInputBorder(
@@ -563,6 +631,8 @@ class _TelaConsumoState extends State<TelaConsumo> {
                 inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 decoration: const InputDecoration(
                   labelText: "Consumo (L)",
+                  filled: true,
+                  fillColor: Colors.white,
                   labelStyle: TextStyle(color: Colors.black),
                   border: OutlineInputBorder(),
                   focusedBorder: OutlineInputBorder(
@@ -588,6 +658,8 @@ class _TelaConsumoState extends State<TelaConsumo> {
                 inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 decoration: const InputDecoration(
                   labelText: "Distância percorrida (km)",
+                  filled: true,
+                  fillColor: Colors.white,
                   labelStyle: TextStyle(color: Colors.black),
                   border: OutlineInputBorder(),
                   focusedBorder: OutlineInputBorder(
@@ -609,7 +681,6 @@ class _TelaConsumoState extends State<TelaConsumo> {
               const SizedBox(height: 30),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color.fromARGB(247, 246, 244, 255),
                   side: const BorderSide(color: Colors.black, width: 1),
                   padding: const EdgeInsets.symmetric(
                     vertical: 18,
@@ -669,7 +740,9 @@ class _TelaConsumoState extends State<TelaConsumo> {
 }
 
 class TelaPrecos extends StatefulWidget {
-  const TelaPrecos({super.key});
+  const TelaPrecos({super.key, required this.tema, required this.trocarTema});
+  final ThemeMode tema;
+  final VoidCallback trocarTema;
 
   @override
   State<TelaPrecos> createState() => _TelaPrecosState();
@@ -697,16 +770,26 @@ class _TelaPrecosState extends State<TelaPrecos> {
     "SP",
   ];
   String? _selectedItem;
-  String preco = "";
+  String preco = "indefinido";
   String retorno = "";
   final _formKey = GlobalKey<FormState>();
+
+ThemeMode tema = ThemeMode.light;
+bool modoEscuro = false;
+
+  void trocarTema(){
+  setState(() {
+    tema = modoEscuro? ThemeMode.dark : ThemeMode.light;
+    modoEscuro = !modoEscuro;
+  });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        actions: [IconButton(onPressed: widget.trocarTema, icon: Icon(modoEscuro ? Icons.light_mode : Icons.dark_mode))],
         toolbarHeight: 110,
-        backgroundColor: const Color.fromARGB(247, 246, 244, 255),
         leading: IconButton(
           icon: const Icon(
             Icons.arrow_back_rounded,
@@ -751,12 +834,11 @@ class _TelaPrecosState extends State<TelaPrecos> {
         ),
       ),
       body: Container(
-        color: const Color.fromARGB(247, 246, 244, 255),
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Form(
             key: _formKey,
-            child: Column(
+            child: ListView(
               children: [
                 const SizedBox(height: 60),
                 DropdownButtonFormField<String>(
@@ -777,7 +859,7 @@ class _TelaPrecosState extends State<TelaPrecos> {
                           value: item,
                           child: Text(
                             item,
-                            style: const TextStyle(color: Colors.black),
+                            style: TextStyle(color: widget.tema == ThemeMode.dark ? Colors.grey : Colors.black),
                           ),
                         );
                       }).toList(),
@@ -792,12 +874,11 @@ class _TelaPrecosState extends State<TelaPrecos> {
                     }
                     return null;
                   },
-                  dropdownColor: const Color.fromARGB(247, 246, 244, 255),
+                  dropdownColor: widget.tema == ThemeMode.dark ? const Color.fromARGB(255, 37, 34, 34): const Color.fromARGB(247, 246, 244, 255),
                 ),
                 const SizedBox(height: 30),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color.fromARGB(247, 246, 244, 255),
                     side: const BorderSide(color: Colors.black, width: 1),
                     padding: const EdgeInsets.symmetric(
                       vertical: 18,
@@ -812,6 +893,9 @@ class _TelaPrecosState extends State<TelaPrecos> {
                     style: TextStyle(color: Colors.black, fontSize: 15),
                   ),
                   onPressed: () async {
+                    setState(() {
+                      preco = "";
+                    });
                     if (_selectedItem != null) {
                       try {
                         final response = await http.get(
@@ -831,21 +915,22 @@ class _TelaPrecosState extends State<TelaPrecos> {
                                 json['precos']['gasolina'][_selectedItem!
                                         .toLowerCase()]
                                     .toString();
-                            retorno =
-                                'A gasolina em sua localização custa em média R\$$preco';
+                            retorno = 'A gasolina em sua localização custa em média R\$$preco';
                           });
                         }
                       } catch (e) {
                         setState(() {
                           retorno =
                               'Ocorreu um erro na busca do preço \n Por favor, tente novamente mais tarde.';
+                          preco = "indefinido";
                         });
                       }
                     }
                   },
                 ),
                 const SizedBox(height: 30),
-                Text(
+                preco == "" ? const CircularProgressIndicator(padding: EdgeInsets.all(150),)
+                :Text(
                   retorno != "" ? retorno : "",
                   style: const TextStyle(fontSize: 19),
                   textAlign: TextAlign.center,
@@ -858,6 +943,35 @@ class _TelaPrecosState extends State<TelaPrecos> {
     );
   }
 }
+
+ThemeData temaEscuro = ThemeData(
+  appBarTheme: AppBarTheme(
+    backgroundColor: const Color.fromARGB(255, 37, 34, 34),
+    titleTextStyle: TextStyle(color: Colors.white),
+    actionsIconTheme: IconThemeData(color: Colors.white)
+  ),
+  textTheme: const TextTheme(
+    bodySmall: TextStyle(color: Colors.white),
+    bodyMedium: TextStyle(color: Colors.white),
+  ),
+  scaffoldBackgroundColor: const Color.fromARGB(255, 37, 34, 34),
+  buttonTheme: ButtonThemeData(buttonColor: const Color.fromARGB(255, 37, 34, 34),)
+);
+
+ThemeData temaClaro = ThemeData(
+  appBarTheme: AppBarTheme(
+    backgroundColor: const Color.fromARGB(247, 246, 244, 255),
+    titleTextStyle: TextStyle(color: Colors.black),
+    actionsIconTheme: IconThemeData(color: const Color.fromARGB(255, 37, 34, 34),)
+  ),
+  textTheme: const TextTheme(
+    bodySmall: TextStyle(color: Colors.black),
+    bodyMedium: TextStyle(color: Colors.black),
+    bodyLarge: TextStyle(color: Colors.black),
+  ),
+  scaffoldBackgroundColor: const Color.fromARGB(247, 246, 244, 255),
+  buttonTheme: ButtonThemeData(buttonColor: const Color.fromARGB(247, 246, 244, 255),)
+);
 
 // Deve ser usado em uma função async
 // final SharedPreferencesWithCache prefsWithCache =
