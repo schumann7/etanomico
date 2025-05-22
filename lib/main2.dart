@@ -1,241 +1,312 @@
 import 'package:flutter/material.dart';
-import 'dart:convert';
-import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
+
+final NumberFormat moedaFormat = NumberFormat.currency(
+  locale: 'pt_BR',
+  symbol: 'R\$',
+);
+final NumberFormat inteiroFormat = NumberFormat.decimalPattern('pt_BR');
 
 void main() {
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
   @override
   State<MyApp> createState() => _MyAppState();
 }
 
 class _MyAppState extends State<MyApp> {
-  ThemeMode _temaAtual = ThemeMode.light;
+  ThemeMode tema = ThemeMode.light;
+  bool modoEscuro = false;
 
-  void _trocarTema() {
+  void trocarTema() {
     setState(() {
-      _temaAtual =
-          _temaAtual == ThemeMode.light ? ThemeMode.dark : ThemeMode.light;
+      modoEscuro = !modoEscuro;
+      tema = modoEscuro ? ThemeMode.dark : ThemeMode.light;
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Etanômico',
+      title: 'Etan\u00f4mico',
       theme: temaClaro,
       darkTheme: temaEscuro,
-      themeMode: _temaAtual,
-      home: TelaPrecos(
-        trocarTema: _trocarTema,
-        temaAtual: _temaAtual,
-      ),
+      themeMode: tema,
       debugShowCheckedModeBanner: false,
+      home: Splash(trocarTema: trocarTema),
     );
   }
 }
 
-class TelaPrecos extends StatefulWidget {
+class Splash extends StatefulWidget {
   final VoidCallback trocarTema;
-  final ThemeMode temaAtual;
 
-  const TelaPrecos({
-    super.key,
-    required this.trocarTema,
-    required this.temaAtual,
-  });
+  const Splash({super.key, required this.trocarTema});
 
   @override
-  State<TelaPrecos> createState() => _TelaPrecosState();
+  SplashState createState() => SplashState();
 }
 
-class _TelaPrecosState extends State<TelaPrecos> {
-  final List<String> lista = [
-    "BR", "AL", "AM", "CE", "DF", "ES", "GO", "MA", "MT",
-    "MG", "PR", "PB", "PA", "PE", "RS", "RJ", "SC", "SP",
-  ];
-  String? _selectedItem;
-  String preco = "indefinido";
-  String retorno = "";
-  final _formKey = GlobalKey<FormState>();
+class SplashState extends State<Splash> {
+  @override
+  void initState() {
+    super.initState();
+    Future.delayed(Duration(seconds: 3), () {
+      if (!mounted) return;
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => TelaInicial(trocarTema: widget.trocarTema),
+        ),
+      );
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    final bool modoEscuro = widget.temaAtual == ThemeMode.dark;
+    return Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Image.asset(
+              'assets/images/splash-logo.png',
+              width: 300,
+              height: 300,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class TelaInicial extends StatelessWidget {
+  final VoidCallback trocarTema;
+
+  const TelaInicial({super.key, required this.trocarTema});
+
+  @override
+  Widget build(BuildContext context) {
+    final bool modoEscuro = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
       appBar: AppBar(
+        actions: [
+          IconButton(
+            onPressed: trocarTema,
+            icon: Icon(modoEscuro ? Icons.light_mode : Icons.dark_mode),
+          )
+        ],
         toolbarHeight: 110,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, size: 28),
-          onPressed: () => Navigator.pop(context),
-          tooltip: 'Voltar',
-          splashRadius: 24,
-        ),
-        centerTitle: true,
-        title: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Image.asset('assets/images/Logo_Etanômico.png', height: 60),
-            const SizedBox(width: 3),
-            Flexible(
-              child: Builder(
-                builder: (context) => Padding(
+        title: Center(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const SizedBox(width: 50),
+              Image.asset('assets/images/Logo_Etan\u00f4mico.png', height: 60),
+              const SizedBox(width: 3),
+              Flexible(
+                child: Padding(
                   padding: EdgeInsets.only(
                     top: MediaQuery.of(context).size.height * 0.05,
                   ),
                   child: Text(
-                    'Etanômico',
+                    'Etan\u00f4mico',
                     style: TextStyle(
-                      fontSize: MediaQuery.of(context).size.width < 400 ? 26 : 34,
+                      fontSize:
+                          MediaQuery.of(context).size.width < 400 ? 26 : 34,
                       fontWeight: FontWeight.bold,
                     ),
                     overflow: TextOverflow.ellipsis,
                     maxLines: 1,
+                    softWrap: false,
                   ),
                 ),
               ),
-            ),
-          ],
-        ),
-        actions: [
-          IconButton(
-            icon: Icon(
-              modoEscuro ? Icons.light_mode : Icons.dark_mode,
-            ),
-            onPressed: widget.trocarTema,
-            tooltip: 'Trocar tema',
-          ),
-        ],
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: ListView(
-            children: [
-              const SizedBox(height: 60),
-              DropdownButtonFormField<String>(
-                decoration: InputDecoration(
-                  labelStyle: TextStyle(color: modoEscuro ? Colors.white : Colors.black),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: modoEscuro ? Colors.white : Colors.black),
-                  ),
-                  labelText: 'Selecione seu estado',
-                  border: const OutlineInputBorder(),
-                  filled: true,
-                  fillColor: modoEscuro
-                      ? const Color.fromARGB(255, 58, 58, 58)
-                      : const Color.fromARGB(247, 246, 244, 255),
-                ),
-                value: _selectedItem,
-                items: lista.map((item) {
-                  return DropdownMenuItem(
-                    value: item,
-                    child: Text(
-                      item,
-                      style: TextStyle(color: modoEscuro ? Colors.white : Colors.black),
-                    ),
-                  );
-                }).toList(),
-                onChanged: (value) {
-                  setState(() {
-                    _selectedItem = value;
-                  });
-                },
-                validator: (value) =>
-                    value == null ? 'Selecione um item' : null,
-                dropdownColor: modoEscuro
-                    ? const Color.fromARGB(255, 37, 34, 34)
-                    : const Color.fromARGB(247, 246, 244, 255),
-              ),
-              const SizedBox(height: 30),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  side: BorderSide(color: modoEscuro ? Colors.white : Colors.black, width: 1),
-                  padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 30),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                ),
-                child: Text(
-                  'Confirmar',
-                  style: TextStyle(
-                    color: modoEscuro ? Colors.white : Colors.black,
-                    fontSize: 15,
-                  ),
-                ),
-                onPressed: () async {
-                  setState(() {
-                    preco = "";
-                    retorno = "";
-                  });
-
-                  if (_selectedItem != null) {
-                    try {
-                      final response = await http.get(
-                        Uri.parse('https://combustivelapi.com.br/api/precos'),
-                        headers: {
-                          'Content-Type': 'application/json; charset=UTF-8',
-                        },
-                      );
-                      final json = jsonDecode(response.body);
-
-                      if (json['precos']['gasolina']
-                          .containsKey(_selectedItem!.toLowerCase())) {
-                        setState(() {
-                          preco = json['precos']['gasolina']
-                                  [_selectedItem!.toLowerCase()]
-                              .toString();
-                          retorno =
-                              'A gasolina em sua localização custa em média R\$$preco';
-                        });
-                      }
-                    } catch (e) {
-                      setState(() {
-                        retorno =
-                            'Ocorreu um erro na busca do preço.\nPor favor, tente novamente mais tarde.';
-                        preco = "indefinido";
-                      });
-                    }
-                  }
-                },
-              ),
-              const SizedBox(height: 30),
-              preco == ""
-                  ? const Center(child: CircularProgressIndicator())
-                  : Text(
-                      retorno,
-                      style: const TextStyle(fontSize: 19),
-                      textAlign: TextAlign.center,
-                    ),
             ],
           ),
         ),
+      ),
+      body: Builder(
+        builder: (context) {
+          final bool isDark = Theme.of(context).brightness == Brightness.dark;
+          double largura = MediaQuery.of(context).size.width;
+          double altura = MediaQuery.of(context).size.height;
+          double paddingLateral = largura * 0.05;
+          double espacamentoTopo = altura * 0.04;
+          double espacamentoEntreBotoes = altura * 0.05;
+
+          Color backgroundColor = isDark
+              ? Color.fromARGB(255, 31, 31, 31)
+              : Color.fromARGB(247, 246, 244, 255);
+          Color borderColor = isDark ? Colors.white : Colors.black;
+          Color textColor = isDark ? Colors.white : Colors.black;
+
+          return ListView(
+            padding: EdgeInsets.only(
+              left: paddingLateral,
+              right: paddingLateral,
+              top: espacamentoTopo,
+            ),
+            children: [
+              botaoMenu(
+                context,
+                backgroundColor,
+                borderColor,
+                textColor,
+                Icons.calculate_outlined,
+                'Calculadora \u00c1lcool x Gasolina',
+                () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => TelaComparativo(trocarTema: trocarTema),
+                    ),
+                  );
+                },
+              ),
+              SizedBox(height: espacamentoEntreBotoes),
+              botaoMenu(
+                context,
+                backgroundColor,
+                borderColor,
+                textColor,
+                Icons.speed_outlined,
+                'Calculadora de Consumo',
+                () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => TelaConsumo(trocarTema: trocarTema),
+                    ),
+                  );
+                },
+              ),
+              SizedBox(height: espacamentoEntreBotoes),
+              botaoMenu(
+                context,
+                backgroundColor,
+                borderColor,
+                textColor,
+                Icons.trending_up_outlined,
+                'Monitoramento de Pre\u00e7os',
+                () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => TelaPrecos(trocarTema: trocarTema),
+                    ),
+                  );
+                },
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  Widget botaoMenu(BuildContext context, Color bgColor, Color borderColor, Color textColor, IconData icon, String texto, VoidCallback onPressed) {
+    return ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 10),
+        backgroundColor: bgColor,
+        side: BorderSide(color: borderColor, width: 1),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15),
+        ),
+      ),
+      onPressed: onPressed,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Icon(icon, color: textColor, size: 22),
+          const SizedBox(width: 10),
+          Flexible(
+            child: Text(
+              texto,
+              style: TextStyle(
+                color: textColor,
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
+              textAlign: TextAlign.center,
+              softWrap: true,
+              overflow: TextOverflow.visible,
+            ),
+          ),
+        ],
       ),
     );
   }
 }
 
+// As telas abaixo devem ser ajustadas separadamente para remover depend\u00eancia da prop "tema"
+class TelaComparativo extends StatelessWidget {
+  final VoidCallback trocarTema;
+  const TelaComparativo({super.key, required this.trocarTema});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(appBar: AppBar(title: Text("Calculadora Álcool x Gasolina")));
+  }
+}
+
+class TelaConsumo extends StatelessWidget {
+  final VoidCallback trocarTema;
+  const TelaConsumo({super.key, required this.trocarTema});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(appBar: AppBar(title: Text("Calculadora de Consumo")));
+  }
+}
+
+class TelaPrecos extends StatelessWidget {
+  final VoidCallback trocarTema;
+  const TelaPrecos({super.key, required this.trocarTema});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(appBar: AppBar(title: Text("Monitoramento de Preços")));
+  }
+}
+
 ThemeData temaEscuro = ThemeData(
-  brightness: Brightness.dark,
-  appBarTheme: const AppBarTheme(
-    backgroundColor: Color.fromARGB(255, 37, 34, 34),
+  appBarTheme: AppBarTheme(
+    backgroundColor: const Color.fromARGB(255, 31, 31, 31),
     titleTextStyle: TextStyle(color: Colors.white),
-    actionsIconTheme: IconThemeData(color: Colors.white),
+    actionsIconTheme: IconThemeData(color: Colors.white)
   ),
-  scaffoldBackgroundColor: const Color.fromARGB(255, 37, 34, 34),
+  textTheme: const TextTheme(
+    bodySmall: TextStyle(color: Colors.white),
+    bodyMedium: TextStyle(color: Colors.white),
+    bodyLarge: TextStyle(color: Colors.white),
+    labelSmall: TextStyle(color: Colors.white),
+    labelMedium: TextStyle(color: Colors.white),
+    labelLarge: TextStyle(color: Colors.white),
+  ),
+  scaffoldBackgroundColor: const Color.fromARGB(255, 31, 31, 31),
+  buttonTheme: ButtonThemeData(buttonColor: const Color.fromARGB(255, 37, 34, 34),),
 );
 
 ThemeData temaClaro = ThemeData(
-  brightness: Brightness.light,
-  appBarTheme: const AppBarTheme(
-    backgroundColor: Color.fromARGB(247, 246, 244, 255),
+  appBarTheme: AppBarTheme(
+    backgroundColor: const Color.fromARGB(247, 246, 244, 255),
     titleTextStyle: TextStyle(color: Colors.black),
-    actionsIconTheme: IconThemeData(color: Colors.black),
+    actionsIconTheme: IconThemeData(color: const Color.fromARGB(255, 37, 34, 34),)
+  ),
+  textTheme: const TextTheme(
+    bodySmall: TextStyle(color: Colors.black),
+    bodyMedium: TextStyle(color: Colors.black),
+    bodyLarge: TextStyle(color: Colors.black),
   ),
   scaffoldBackgroundColor: const Color.fromARGB(247, 246, 244, 255),
+  buttonTheme: ButtonThemeData(buttonColor: const Color.fromARGB(247, 246, 244, 255),)
 );

@@ -24,7 +24,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  ThemeMode tema = ThemeMode.light;
+  ThemeMode tema = ThemeMode.dark;
   bool modoEscuro = false;
 
   void trocarTema() {
@@ -42,7 +42,7 @@ class _MyAppState extends State<MyApp> {
       darkTheme: temaEscuro,
       themeMode: tema,
       debugShowCheckedModeBanner: false,
-      home: Splash(
+      home: TelaInicial(
         tema: tema,
         trocarTema: trocarTema,
       ),
@@ -61,7 +61,7 @@ class Splash extends StatefulWidget {
 
 class SplashState extends State<Splash> {
 
-  ThemeMode tema = ThemeMode.light;
+  ThemeMode tema = ThemeMode.dark;
   bool modoEscuro = false;
 
   void trocarTema(){
@@ -119,7 +119,7 @@ class TelaInicial extends StatefulWidget {
 
 class _TelaInicialState extends State<TelaInicial> {
 
-ThemeMode tema = ThemeMode.light;
+ThemeMode tema = ThemeMode.dark;
 bool modoEscuro = false;
 
   void trocarTema(){
@@ -544,6 +544,7 @@ class _TelaConsumoState extends State<TelaConsumo> {
   final TextEditingController _consumoController = TextEditingController();
   final TextEditingController _distanciaController = TextEditingController();
   String _resultado = "";
+  bool litro = true;
 
   bool modoEscuro = false;
   ThemeMode tema = ThemeMode.light;
@@ -634,29 +635,38 @@ class _TelaConsumoState extends State<TelaConsumo> {
                 },
               ),
               const SizedBox(height: 30),
-              TextField(
-                controller: _consumoController,
-                keyboardType: TextInputType.number,
-                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                decoration: InputDecoration(
-                  labelText: "Consumo (L)",
-                  labelStyle: TextStyle(color: widget.tema == ThemeMode.dark ? Colors.white : Colors.black),
-                  border: const OutlineInputBorder(),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: widget.tema == ThemeMode.dark ? Colors.white : Colors.black),
-                  ),
-                ),
-                onChanged: (value) {
-                  if (value.isNotEmpty) {
-                    int parsed = int.parse(value.replaceAll('.', ''));
-                    _consumoController.value = TextEditingValue(
-                      text: inteiroFormat.format(parsed),
-                      selection: TextSelection.collapsed(
-                        offset: inteiroFormat.format(parsed).length,
+              Row(
+                children: [
+                  Expanded(child: 
+                  TextField(
+                    controller: _consumoController,
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                    decoration: InputDecoration(
+                      labelText: litro? "Consumo (L)" : "Consumo (L/km)",
+                      labelStyle: TextStyle(color: widget.tema == ThemeMode.dark ? Colors.white : Colors.black),
+                      border: const OutlineInputBorder(),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: widget.tema == ThemeMode.dark ? Colors.white : Colors.black),
                       ),
-                    );
-                  }
-                },
+                    ),
+                    onChanged: (value) {
+                      if (value.isNotEmpty) {
+                        int parsed = int.parse(value.replaceAll('.', ''));
+                        _consumoController.value = TextEditingValue(
+                          text: inteiroFormat.format(parsed),
+                          selection: TextSelection.collapsed(
+                            offset: inteiroFormat.format(parsed).length,
+                          ),
+                        );
+                      }
+                    },
+                  )),
+                ElevatedButton(onPressed: (){setState(() {
+                  litro = !litro;
+                });}, style: ElevatedButton.styleFrom(shape: CircleBorder(eccentricity: 0.5), side: BorderSide(color: widget.tema == ThemeMode.dark ? Colors.white: Colors.black, width: 1), backgroundColor: widget.tema == ThemeMode.dark ? const Color.fromARGB(255, 31, 31, 31): const Color.fromARGB(247, 246, 244, 255),), child: Text(litro? "L/km" : "L", 
+                  style: TextStyle(color: widget.tema == ThemeMode.dark ? Colors.white: Colors.black, fontSize: 15),),)
+              ],
               ),
               const SizedBox(height: 30),
               TextField(
@@ -719,8 +729,8 @@ class _TelaConsumoState extends State<TelaConsumo> {
                     double consumo = double.parse(c);
                     double distancia = double.parse(d);
 
-                    double kmPorLitro = distancia / consumo;
-                    double valorGasto = preco * consumo;
+                    double kmPorLitro = litro? distancia / consumo : distancia / (consumo * distancia);
+                    double valorGasto = litro? preco * consumo : preco * consumo * distancia;
 
                     setState(() {
                       _resultado =
