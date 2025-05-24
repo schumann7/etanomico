@@ -26,11 +26,19 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   ThemeMode tema = ThemeMode.dark;
   bool modoEscuro = false;
+  Icon iconeDefault = Icon(Icons.light_mode);
+  List<Color> cores = [Color.fromARGB(255, 31, 31, 31), Color.fromARGB(247, 246, 244, 255), Colors.white, Colors.black];
 
-  void trocarTema() {
+    void trocarTema() {
     setState(() {
-      modoEscuro = !modoEscuro;
       tema = modoEscuro ? ThemeMode.dark : ThemeMode.light;
+      modoEscuro = !modoEscuro;
+      if(modoEscuro){
+        iconeDefault = Icon(Icons.dark_mode);
+      } else {
+        iconeDefault = Icon(Icons.light_mode);
+      }
+
     });
   }
 
@@ -42,7 +50,7 @@ class _MyAppState extends State<MyApp> {
       darkTheme: temaEscuro,
       themeMode: tema,
       debugShowCheckedModeBanner: false,
-      home: TelaInicial(tema: tema, trocarTema: trocarTema),
+      home: TelaInicial(tema: tema, trocarTema: trocarTema, iconeDefault: iconeDefault,),
     );
   }
 }
@@ -50,22 +58,14 @@ class _MyAppState extends State<MyApp> {
 class Splash extends StatefulWidget {
   final VoidCallback trocarTema;
   final ThemeMode tema;
-  const Splash({super.key, required this.tema, required this.trocarTema});
+  final Icon iconeDefault;
+  const Splash({super.key, required this.tema, required this.trocarTema, required this.iconeDefault});
 
   @override
   SplashState createState() => SplashState();
 }
 
 class SplashState extends State<Splash> {
-  ThemeMode tema = ThemeMode.dark;
-  bool modoEscuro = false;
-
-  void trocarTema() {
-    setState(() {
-      tema = modoEscuro ? ThemeMode.dark : ThemeMode.light;
-      modoEscuro = !modoEscuro;
-    });
-  }
 
   @override
   void initState() {
@@ -77,7 +77,7 @@ class SplashState extends State<Splash> {
         MaterialPageRoute(
           builder:
               (context) =>
-                  TelaInicial(tema: widget.tema, trocarTema: widget.trocarTema),
+                  TelaInicial(tema: widget.tema, trocarTema: widget.trocarTema, iconeDefault: widget.iconeDefault,),
         ),
       );
     });
@@ -105,41 +105,30 @@ class SplashState extends State<Splash> {
 class TelaInicial extends StatefulWidget {
   final VoidCallback trocarTema;
   final ThemeMode tema;
+  final Icon iconeDefault;
 
-  const TelaInicial({super.key, required this.trocarTema, required this.tema});
+  const TelaInicial({super.key, required this.trocarTema, required this.tema, required this.iconeDefault});
 
   @override
   State<TelaInicial> createState() => _TelaInicialState();
 }
 
 class _TelaInicialState extends State<TelaInicial> {
-  ThemeMode tema = ThemeMode.dark;
   bool modoEscuro = false;
-
-  void trocarTema() {
-    setState(() {
-      tema = modoEscuro ? ThemeMode.dark : ThemeMode.light;
-      modoEscuro = !modoEscuro;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
     final Color appBarColor =
         widget.tema == ThemeMode.dark
             ? const Color.fromARGB(255, 31, 31, 31)
-            : const Color(0xFFF6F4FF);
+            : const Color.fromARGB(247, 246, 244, 255);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: appBarColor,
         actions: [
           IconButton(
             onPressed: widget.trocarTema,
-            icon: Icon(
-              widget.tema == ThemeMode.dark
-                  ? Icons.light_mode
-                  : Icons.dark_mode,
-            ),
+            icon: widget.iconeDefault,
           ),
         ],
         toolbarHeight: 110,
@@ -221,6 +210,7 @@ class _TelaInicialState extends State<TelaInicial> {
                           (context) => TelaComparativo(
                             tema: widget.tema,
                             trocarTema: widget.trocarTema,
+                            iconeDefault: widget.iconeDefault,
                           ),
                     ),
                   );
@@ -287,6 +277,7 @@ class _TelaInicialState extends State<TelaInicial> {
                           (context) => TelaConsumo(
                             tema: widget.tema,
                             trocarTema: widget.trocarTema,
+                            iconeDefault: widget.iconeDefault,
                           ),
                     ),
                   );
@@ -353,6 +344,7 @@ class _TelaInicialState extends State<TelaInicial> {
                           (context) => TelaPrecos(
                             tema: widget.tema,
                             trocarTema: widget.trocarTema,
+                            iconeDefault: widget.iconeDefault,
                           ),
                     ),
                   );
@@ -419,6 +411,7 @@ class _TelaInicialState extends State<TelaInicial> {
                           (context) => TelaRegistroGastos(
                             tema: widget.tema,
                             trocarTema: widget.trocarTema,
+                            iconeDefault: widget.iconeDefault,
                           ),
                     ),
                   );
@@ -466,12 +459,9 @@ class _TelaInicialState extends State<TelaInicial> {
 class TelaComparativo extends StatefulWidget {
   final VoidCallback trocarTema;
   final ThemeMode tema;
+  final Icon iconeDefault;
 
-  const TelaComparativo({
-    super.key,
-    required this.tema,
-    required this.trocarTema,
-  });
+  const TelaComparativo({super.key, required this.trocarTema, required this.tema, required this.iconeDefault});
 
   @override
   State<TelaComparativo> createState() => _TelaComparativoState();
@@ -489,7 +479,7 @@ class _TelaComparativoState extends State<TelaComparativo> {
     final Color appBarColor =
         widget.tema == ThemeMode.dark
             ? const Color.fromARGB(255, 31, 31, 31)
-            : const Color(0xFFF6F4FF);
+            : const Color.fromARGB(247, 246, 244, 255);
 
     return Scaffold(
       appBar: AppBar(
@@ -497,7 +487,7 @@ class _TelaComparativoState extends State<TelaComparativo> {
         actions: [
           IconButton(
             onPressed: widget.trocarTema,
-            icon: Icon(modoEscuro ? Icons.light_mode : Icons.dark_mode),
+            icon: widget.iconeDefault,
           ),
         ],
         toolbarHeight: 110,
@@ -712,9 +702,10 @@ class _TelaComparativoState extends State<TelaComparativo> {
 }
 
 class TelaConsumo extends StatefulWidget {
-  const TelaConsumo({super.key, required this.tema, required this.trocarTema});
+  const TelaConsumo({super.key, required this.tema, required this.trocarTema, required this.iconeDefault});
   final ThemeMode tema;
   final VoidCallback trocarTema;
+  final Icon iconeDefault;
 
   @override
   State<TelaConsumo> createState() => _TelaConsumoState();
@@ -728,20 +719,13 @@ class _TelaConsumoState extends State<TelaConsumo> {
   bool litro = true;
 
   bool modoEscuro = false;
-  ThemeMode tema = ThemeMode.light;
-  void trocarTema() {
-    setState(() {
-      tema = modoEscuro ? ThemeMode.dark : ThemeMode.light;
-      modoEscuro = !modoEscuro;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
     final Color appBarColor =
         widget.tema == ThemeMode.dark
             ? const Color.fromARGB(255, 31, 31, 31)
-            : const Color(0xFFF6F4FF);
+            : const Color.fromARGB(247, 246, 244, 255);
 
     return Scaffold(
       appBar: AppBar(
@@ -749,7 +733,7 @@ class _TelaConsumoState extends State<TelaConsumo> {
         actions: [
           IconButton(
             onPressed: widget.trocarTema,
-            icon: Icon(modoEscuro ? Icons.light_mode : Icons.dark_mode),
+            icon: widget.iconeDefault,
           ),
         ],
         toolbarHeight: 110,
@@ -844,7 +828,7 @@ class _TelaConsumoState extends State<TelaConsumo> {
                     keyboardType: TextInputType.number,
                     inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                     decoration: InputDecoration(
-                      labelText: litro ? "Consumo (L)" : "Consumo (L/km)",
+                      labelText: litro ? "Consumo (L)" : "Consumo (km/L)",
                       labelStyle: TextStyle(
                         color:
                             widget.tema == ThemeMode.dark
@@ -895,7 +879,7 @@ class _TelaConsumoState extends State<TelaConsumo> {
                             : const Color.fromARGB(247, 246, 244, 255),
                   ),
                   child: Text(
-                    litro ? "L/km" : "L",
+                    litro ? "km/L" : "L",
                     style: TextStyle(
                       color:
                           widget.tema == ThemeMode.dark
@@ -993,17 +977,14 @@ class _TelaConsumoState extends State<TelaConsumo> {
                   double consumo = double.parse(c);
                   double distancia = double.parse(d);
 
-                  double kmPorLitro =
-                      litro
-                          ? distancia / consumo
-                          : distancia / (consumo * distancia);
+                  double kmPorLitro = distancia / consumo;
                   double valorGasto =
-                      litro ? preco * consumo : preco * consumo * distancia;
+                      litro ? preco * consumo : preco * distancia;
 
                   setState(() {
                     _resultado =
                         "Valor gasto com combustível: R\$${valorGasto.toStringAsFixed(2).replaceAll('.', ',').replaceAllMapped(RegExp(r'(\d)(?=(\d{3})+(?!\d))'), (match) => '${match[1]}.')}\n"
-                        "Consumo médio: ${kmPorLitro.toStringAsFixed(2).replaceAll('.', ',')} km/l";
+                        "Consumo médio: ${kmPorLitro.toStringAsFixed(2).replaceAll('.', ',')} ${litro? "km/L" : "L"}";
                     FocusScope.of(context).requestFocus(FocusNode());
                   });
                 }
@@ -1023,9 +1004,10 @@ class _TelaConsumoState extends State<TelaConsumo> {
 }
 
 class TelaPrecos extends StatefulWidget {
-  const TelaPrecos({super.key, required this.tema, required this.trocarTema});
+  const TelaPrecos({super.key, required this.tema, required this.trocarTema, required this.iconeDefault});
   final ThemeMode tema;
   final VoidCallback trocarTema;
+  final Icon iconeDefault;
 
   @override
   State<TelaPrecos> createState() => _TelaPrecosState();
@@ -1057,22 +1039,14 @@ class _TelaPrecosState extends State<TelaPrecos> {
   String retorno = " ";
   final _formKey = GlobalKey<FormState>();
 
-  ThemeMode tema = ThemeMode.light;
   bool modoEscuro = false;
-
-  void trocarTema() {
-    setState(() {
-      tema = modoEscuro ? ThemeMode.dark : ThemeMode.light;
-      modoEscuro = !modoEscuro;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
     final Color appBarColor =
         widget.tema == ThemeMode.dark
             ? const Color.fromARGB(255, 31, 31, 31)
-            : const Color(0xFFF6F4FF);
+            : const Color.fromARGB(247, 246, 244, 255);
 
     return Scaffold(
       appBar: AppBar(
@@ -1080,7 +1054,7 @@ class _TelaPrecosState extends State<TelaPrecos> {
         actions: [
           IconButton(
             onPressed: widget.trocarTema,
-            icon: Icon(modoEscuro ? Icons.light_mode : Icons.dark_mode),
+            icon: widget.iconeDefault,
           ),
         ],
         toolbarHeight: 110,
@@ -1277,11 +1251,13 @@ class _TelaPrecosState extends State<TelaPrecos> {
 class TelaRegistroGastos extends StatefulWidget {
   final ThemeMode tema;
   final VoidCallback trocarTema;
+  final Icon iconeDefault;
 
   const TelaRegistroGastos({
     super.key,
     required this.tema,
     required this.trocarTema,
+    required this.iconeDefault
   });
 
   @override
@@ -1437,7 +1413,7 @@ class _TelaRegistroGastosState extends State<TelaRegistroGastos> {
               barRods: [
                 BarChartRodData(
                   toY: y,
-                  color: Colors.green[800],
+                  color: Color.fromARGB(255, 37, 136, 96),
                   width: 18,
                   borderRadius: BorderRadius.circular(4),
                   rodStackItems: [],
@@ -1485,7 +1461,7 @@ class _TelaRegistroGastosState extends State<TelaRegistroGastos> {
         actions: [
           IconButton(
             onPressed: widget.trocarTema,
-            icon: Icon(modoEscuro ? Icons.light_mode : Icons.dark_mode),
+            icon: widget.iconeDefault,
           ),
         ],
         toolbarHeight: 110,
@@ -1545,9 +1521,13 @@ class _TelaRegistroGastosState extends State<TelaRegistroGastos> {
                 Expanded(
                   child: TextField(
                     controller: _amountController,
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       labelText: 'Valor do gasto',
-                      prefixIcon: Icon(Icons.local_gas_station),
+                      labelStyle: TextStyle(color: modoEscuro? Colors.white : Colors.black),
+                      prefixIcon: Icon(Icons.local_gas_station, color: modoEscuro? Colors.white : Colors.black,),
+                      focusedBorder: OutlineInputBorder(borderSide: BorderSide(width: 1, color: modoEscuro? Colors.white : Colors.black,)),
+                      filled: true,
+                      fillColor: modoEscuro? Color.fromARGB(255, 31, 31, 31) : Color.fromARGB(247, 246, 244, 255),
                     ),
                     keyboardType: TextInputType.number,
                     inputFormatters: [FilteringTextInputFormatter.digitsOnly],
@@ -1645,7 +1625,7 @@ class _TelaRegistroGastosState extends State<TelaRegistroGastos> {
                   items:
                       ['Semana', 'Mês', 'Ano']
                           .map(
-                            (p) => DropdownMenuItem(value: p, child: Text(p)),
+                            (p) => DropdownMenuItem(value: p, child: Text(p, style: TextStyle(color: modoEscuro? Colors.white : Colors.black),)),
                           )
                           .toList(),
                   onChanged: (v) {
@@ -1653,6 +1633,7 @@ class _TelaRegistroGastosState extends State<TelaRegistroGastos> {
                       _selectedPeriod = v!;
                     });
                   },
+                  dropdownColor: modoEscuro? Color.fromARGB(255, 31, 31, 31) : Color.fromARGB(247, 246, 244, 255),
                 ),
                 const Spacer(),
                 Text(
@@ -1791,7 +1772,7 @@ class _TelaRegistroGastosState extends State<TelaRegistroGastos> {
                             barTouchData: BarTouchData(
                               enabled: true,
                               touchTooltipData: BarTouchTooltipData(
-                                tooltipBgColor: Colors.green[800],
+                                tooltipBgColor: Color.fromARGB(255, 37, 136, 96),
                                 getTooltipItem: (
                                   group,
                                   groupIndex,
@@ -1878,16 +1859,19 @@ class _TelaRegistroGastosState extends State<TelaRegistroGastos> {
                               );
                             },
                             child: Card(
+                              color: modoEscuro? Color.fromARGB(255, 31, 31, 31) : Color.fromARGB(247, 246, 244, 255),
                               child: ListTile(
-                                leading: const Icon(Icons.local_gas_station),
+                                leading: Icon(Icons.local_gas_station, color: modoEscuro? Colors.white : Colors.black),
                                 title: Text(
                                   NumberFormat.currency(
                                     locale: 'pt_BR',
                                     symbol: 'R\$',
                                   ).format(e.amount),
+                                  style: TextStyle(color: modoEscuro? Colors.white : Colors.black),
                                 ),
                                 subtitle: Text(
                                   '${e.date.day}/${e.date.month}/${e.date.year}',
+                                  style: TextStyle(color: modoEscuro? Colors.white : Colors.black)
                                 ),
                               ),
                             ),
