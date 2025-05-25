@@ -2,9 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-
 class TelaPrecos extends StatefulWidget {
-  const TelaPrecos({super.key, required this.tema, required this.trocarTema, required this.iconeDefault});
+  const TelaPrecos({
+    super.key,
+    required this.tema,
+    required this.trocarTema,
+    required this.iconeDefault,
+  });
   final ThemeMode tema;
   final VoidCallback trocarTema;
   final Icon iconeDefault;
@@ -52,10 +56,7 @@ class _TelaPrecosState extends State<TelaPrecos> {
       appBar: AppBar(
         backgroundColor: appBarColor,
         actions: [
-          IconButton(
-            onPressed: widget.trocarTema,
-            icon: widget.iconeDefault,
-          ),
+          IconButton(onPressed: widget.trocarTema, icon: widget.iconeDefault),
         ],
         toolbarHeight: 110,
         leading: IconButton(
@@ -71,34 +72,11 @@ class _TelaPrecosState extends State<TelaPrecos> {
           splashRadius: 24,
         ),
         centerTitle: true,
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Image.asset('assets/images/Logo_Etanômico.png', height: 60),
-            const SizedBox(width: 3),
-            Flexible(
-              child: Builder(
-                builder:
-                    (context) => Padding(
-                      padding: EdgeInsets.only(
-                        top: MediaQuery.of(context).size.height * 0.05,
-                      ),
-                      child: Text(
-                        'Etanômico',
-                        style: TextStyle(
-                          fontSize:
-                              MediaQuery.of(context).size.width < 400 ? 26 : 34,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 1,
-                        softWrap: false,
-                      ),
-                    ),
-              ),
-            ),
-          ],
+        title: Image.asset(
+          widget.tema == ThemeMode.dark
+              ? 'assets/images/logo-dark-mode.png'
+              : 'assets/images/logo-light-mode.png',
+          height: 50,
         ),
       ),
       body: Padding(
@@ -233,7 +211,13 @@ class _TelaPrecosState extends State<TelaPrecos> {
                   ? SizedBox(
                     height: 200.0,
                     width: 200.0,
-                    child: Center(child: CircularProgressIndicator()),
+                    child: Center(
+                      child: CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                          Color.fromARGB(255, 37, 136, 96),
+                        ),
+                      ),
+                    ),
                   )
                   : Text(
                     retorno != " " ? retorno : "",

@@ -5,7 +5,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:intl/intl.dart';
 
-
 class TelaRegistroGastos extends StatefulWidget {
   final ThemeMode tema;
   final VoidCallback trocarTema;
@@ -15,7 +14,7 @@ class TelaRegistroGastos extends StatefulWidget {
     super.key,
     required this.tema,
     required this.trocarTema,
-    required this.iconeDefault
+    required this.iconeDefault,
   });
 
   @override
@@ -138,22 +137,23 @@ class _TelaRegistroGastosState extends State<TelaRegistroGastos> {
 
     if (_selectedPeriod == 'Semana') {
       for (var e in filtered) {
-        grouped[e.date.weekday] = (grouped[e.date.weekday] ?? 0) + e.amount;
+        int idx = e.date.weekday % 7;
+        grouped[idx] = (grouped[idx] ?? 0) + e.amount;
       }
       final bars = List.generate(7, (i) {
-        double y = grouped[i + 1] ?? 0;
+        double y = grouped[i] ?? 0;
         return BarChartGroupData(
           x: i,
           barRods: [
             BarChartRodData(
               toY: y,
-              color: Colors.blue,
+              color: Color.fromARGB(255, 37, 136, 96),
               width: 18,
               borderRadius: BorderRadius.circular(4),
               rodStackItems: [],
             ),
           ],
-          showingTooltipIndicators: y > 0 ? [0] : [],
+          showingTooltipIndicators: [],
         );
       });
       if (bars.every((bar) => bar.barRods.first.toY == 0)) return [];
@@ -177,7 +177,7 @@ class _TelaRegistroGastosState extends State<TelaRegistroGastos> {
                   rodStackItems: [],
                 ),
               ],
-              showingTooltipIndicators: y > 0 ? [0] : [],
+              showingTooltipIndicators: [],
             );
           }).toList();
       if (bars.isEmpty) return [];
@@ -193,13 +193,13 @@ class _TelaRegistroGastosState extends State<TelaRegistroGastos> {
           barRods: [
             BarChartRodData(
               toY: y,
-              color: Colors.blue,
+              color: Color.fromARGB(255, 37, 136, 96),
               width: 18,
               borderRadius: BorderRadius.circular(4),
               rodStackItems: [],
             ),
           ],
-          showingTooltipIndicators: y > 0 ? [0] : [],
+          showingTooltipIndicators: [],
         );
       });
       if (bars.every((bar) => bar.barRods.first.toY == 0)) return [];
@@ -217,10 +217,7 @@ class _TelaRegistroGastosState extends State<TelaRegistroGastos> {
     return Scaffold(
       appBar: AppBar(
         actions: [
-          IconButton(
-            onPressed: widget.trocarTema,
-            icon: widget.iconeDefault,
-          ),
+          IconButton(onPressed: widget.trocarTema, icon: widget.iconeDefault),
         ],
         toolbarHeight: 110,
         leading: IconButton(
@@ -236,34 +233,11 @@ class _TelaRegistroGastosState extends State<TelaRegistroGastos> {
           splashRadius: 24,
         ),
         centerTitle: true,
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Image.asset('assets/images/Logo_Etanômico.png', height: 60),
-            const SizedBox(width: 3),
-            Flexible(
-              child: Builder(
-                builder:
-                    (context) => Padding(
-                      padding: EdgeInsets.only(
-                        top: MediaQuery.of(context).size.height * 0.05,
-                      ),
-                      child: Text(
-                        'Etanômico',
-                        style: TextStyle(
-                          fontSize:
-                              MediaQuery.of(context).size.width < 400 ? 26 : 34,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 1,
-                        softWrap: false,
-                      ),
-                    ),
-              ),
-            ),
-          ],
+        title: Image.asset(
+          widget.tema == ThemeMode.dark
+              ? 'assets/images/logo-dark-mode.png'
+              : 'assets/images/logo-light-mode.png',
+          height: 50,
         ),
       ),
       body: Padding(
@@ -272,8 +246,9 @@ class _TelaRegistroGastosState extends State<TelaRegistroGastos> {
           children: [
             const Text(
               "Registrar gasto",
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
             ),
+            const SizedBox(height: 20),
             Row(
               children: [
                 Expanded(
@@ -281,11 +256,24 @@ class _TelaRegistroGastosState extends State<TelaRegistroGastos> {
                     controller: _amountController,
                     decoration: InputDecoration(
                       labelText: 'Valor do gasto',
-                      labelStyle: TextStyle(color: modoEscuro? Colors.white : Colors.black),
-                      prefixIcon: Icon(Icons.local_gas_station, color: modoEscuro? Colors.white : Colors.black,),
-                      focusedBorder: OutlineInputBorder(borderSide: BorderSide(width: 1, color: modoEscuro? Colors.white : Colors.black,)),
+                      labelStyle: TextStyle(
+                        color: modoEscuro ? Colors.white : Colors.black,
+                      ),
+                      prefixIcon: Icon(
+                        Icons.local_gas_station,
+                        color: modoEscuro ? Colors.white : Colors.black,
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          width: 1,
+                          color: modoEscuro ? Colors.white : Colors.black,
+                        ),
+                      ),
                       filled: true,
-                      fillColor: modoEscuro? Color.fromARGB(255, 31, 31, 31) : Color.fromARGB(247, 246, 244, 255),
+                      fillColor:
+                          modoEscuro
+                              ? Color.fromARGB(255, 31, 31, 31)
+                              : Color.fromARGB(247, 246, 244, 255),
                     ),
                     keyboardType: TextInputType.number,
                     inputFormatters: [FilteringTextInputFormatter.digitsOnly],
@@ -298,9 +286,10 @@ class _TelaRegistroGastosState extends State<TelaRegistroGastos> {
                       vertical: 18,
                       horizontal: 10,
                     ),
-                    backgroundColor: modoEscuro
-                        ? const Color.fromARGB(255, 31, 31, 31)
-                        : const Color.fromARGB(247, 246, 244, 255),
+                    backgroundColor:
+                        modoEscuro
+                            ? const Color.fromARGB(255, 31, 31, 31)
+                            : const Color.fromARGB(247, 246, 244, 255),
                     side: BorderSide(
                       color: modoEscuro ? Colors.white : Colors.black,
                       width: 1,
@@ -337,9 +326,10 @@ class _TelaRegistroGastosState extends State<TelaRegistroGastos> {
                       vertical: 18,
                       horizontal: 10,
                     ),
-                    backgroundColor: modoEscuro
-                        ? const Color.fromARGB(255, 31, 31, 31)
-                        : const Color.fromARGB(247, 246, 244, 255),
+                    backgroundColor:
+                        modoEscuro
+                            ? const Color.fromARGB(255, 31, 31, 31)
+                            : const Color.fromARGB(247, 246, 244, 255),
                     side: BorderSide(
                       color: modoEscuro ? Colors.white : Colors.black,
                       width: 1,
@@ -383,7 +373,16 @@ class _TelaRegistroGastosState extends State<TelaRegistroGastos> {
                   items:
                       ['Semana', 'Mês', 'Ano']
                           .map(
-                            (p) => DropdownMenuItem(value: p, child: Text(p, style: TextStyle(color: modoEscuro? Colors.white : Colors.black),)),
+                            (p) => DropdownMenuItem(
+                              value: p,
+                              child: Text(
+                                p,
+                                style: TextStyle(
+                                  color:
+                                      modoEscuro ? Colors.white : Colors.black,
+                                ),
+                              ),
+                            ),
                           )
                           .toList(),
                   onChanged: (v) {
@@ -391,12 +390,18 @@ class _TelaRegistroGastosState extends State<TelaRegistroGastos> {
                       _selectedPeriod = v!;
                     });
                   },
-                  dropdownColor: modoEscuro? Color.fromARGB(255, 31, 31, 31) : Color.fromARGB(247, 246, 244, 255),
+                  dropdownColor:
+                      modoEscuro
+                          ? Color.fromARGB(255, 31, 31, 31)
+                          : Color.fromARGB(247, 246, 244, 255),
                 ),
                 const Spacer(),
                 Text(
                   "Total: ${NumberFormat.currency(locale: 'pt_BR', symbol: 'R\$').format(total)}",
-                  style: const TextStyle(fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 17,
+                  ),
                 ),
               ],
             ),
@@ -530,7 +535,12 @@ class _TelaRegistroGastosState extends State<TelaRegistroGastos> {
                             barTouchData: BarTouchData(
                               enabled: true,
                               touchTooltipData: BarTouchTooltipData(
-                                tooltipBgColor: Color.fromARGB(255, 37, 136, 96),
+                                tooltipBgColor: Color.fromARGB(
+                                  255,
+                                  37,
+                                  136,
+                                  96,
+                                ),
                                 getTooltipItem: (
                                   group,
                                   groupIndex,
@@ -550,6 +560,7 @@ class _TelaRegistroGastosState extends State<TelaRegistroGastos> {
                                   );
                                 },
                               ),
+                              handleBuiltInTouches: true,
                             ),
                             extraLinesData: ExtraLinesData(),
                             maxY:
@@ -617,19 +628,36 @@ class _TelaRegistroGastosState extends State<TelaRegistroGastos> {
                               );
                             },
                             child: Card(
-                              color: modoEscuro? Color.fromARGB(255, 31, 31, 31) : Color.fromARGB(247, 246, 244, 255),
+                              color:
+                                  modoEscuro
+                                      ? Color.fromARGB(255, 31, 31, 31)
+                                      : Color.fromARGB(247, 246, 244, 255),
                               child: ListTile(
-                                leading: Icon(Icons.local_gas_station, color: modoEscuro? Colors.white : Colors.black),
+                                leading: Icon(
+                                  Icons.local_gas_station,
+                                  color:
+                                      modoEscuro ? Colors.white : Colors.black,
+                                ),
                                 title: Text(
                                   NumberFormat.currency(
                                     locale: 'pt_BR',
                                     symbol: 'R\$',
                                   ).format(e.amount),
-                                  style: TextStyle(color: modoEscuro? Colors.white : Colors.black),
+                                  style: TextStyle(
+                                    color:
+                                        modoEscuro
+                                            ? Colors.white
+                                            : Colors.black,
+                                  ),
                                 ),
                                 subtitle: Text(
                                   '${e.date.day}/${e.date.month}/${e.date.year}',
-                                  style: TextStyle(color: modoEscuro? Colors.white : Colors.black)
+                                  style: TextStyle(
+                                    color:
+                                        modoEscuro
+                                            ? Colors.white
+                                            : Colors.black,
+                                  ),
                                 ),
                               ),
                             ),

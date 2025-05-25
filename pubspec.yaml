@@ -63,7 +63,8 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-    - assets/images/Logo_Etanômico.png
+    - assets/images/logo-light-mode.png
+    - assets/images/logo-dark-mode.png
     - assets/images/splash-logo.png
 
   # An image asset can refer to one or more resolution-specific "variants", see

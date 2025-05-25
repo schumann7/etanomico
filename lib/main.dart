@@ -20,21 +20,23 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  ThemeMode tema = ThemeMode.dark;
+  ThemeMode tema = ThemeMode.light;
   bool modoEscuro = false;
   Icon iconeDefault = Icon(Icons.light_mode);
-  List<Color> cores = [Color.fromARGB(255, 31, 31, 31), Color.fromARGB(247, 246, 244, 255), Colors.white, Colors.black];
+  List<Color> cores = [
+    Color.fromARGB(255, 31, 31, 31),
+    Color.fromARGB(247, 246, 244, 255),
+  ];
 
-    void trocarTema() {
+  void trocarTema() {
     setState(() {
       tema = modoEscuro ? ThemeMode.dark : ThemeMode.light;
       modoEscuro = !modoEscuro;
-      if(modoEscuro){
+      if (modoEscuro) {
         iconeDefault = Icon(Icons.dark_mode);
       } else {
         iconeDefault = Icon(Icons.light_mode);
       }
-
     });
   }
 
@@ -46,7 +48,11 @@ class _MyAppState extends State<MyApp> {
       darkTheme: temaEscuro,
       themeMode: tema,
       debugShowCheckedModeBanner: false,
-      home: TelaInicial(tema: tema, trocarTema: trocarTema, iconeDefault: iconeDefault,),
+      home: TelaInicial(
+        tema: tema,
+        trocarTema: trocarTema,
+        iconeDefault: iconeDefault,
+      ),
     );
   }
 }
@@ -55,14 +61,18 @@ class Splash extends StatefulWidget {
   final VoidCallback trocarTema;
   final ThemeMode tema;
   final Icon iconeDefault;
-  const Splash({super.key, required this.tema, required this.trocarTema, required this.iconeDefault});
+  const Splash({
+    super.key,
+    required this.tema,
+    required this.trocarTema,
+    required this.iconeDefault,
+  });
 
   @override
   SplashState createState() => SplashState();
 }
 
 class SplashState extends State<Splash> {
-
   @override
   void initState() {
     super.initState();
@@ -72,8 +82,11 @@ class SplashState extends State<Splash> {
         context,
         MaterialPageRoute(
           builder:
-              (context) =>
-                  TelaInicial(tema: widget.tema, trocarTema: widget.trocarTema, iconeDefault: widget.iconeDefault,),
+              (context) => TelaInicial(
+                tema: widget.tema,
+                trocarTema: widget.trocarTema,
+                iconeDefault: widget.iconeDefault,
+              ),
         ),
       );
     });
@@ -98,12 +111,6 @@ class SplashState extends State<Splash> {
   }
 }
 
-
-
-
-
-
-
 ThemeData temaEscuro = ThemeData(
   appBarTheme: const AppBarTheme(
     backgroundColor: Color.fromARGB(255, 31, 31, 31),
@@ -123,6 +130,10 @@ ThemeData temaEscuro = ThemeData(
   buttonTheme: ButtonThemeData(
     buttonColor: const Color.fromARGB(255, 37, 34, 34),
   ),
+  textSelectionTheme: const TextSelectionThemeData(
+    cursorColor: Color.fromARGB(255, 37, 136, 96),
+    selectionHandleColor: Color.fromARGB(255, 37, 136, 96),
+  ),
 );
 
 ThemeData temaClaro = ThemeData(
@@ -140,5 +151,9 @@ ThemeData temaClaro = ThemeData(
   scaffoldBackgroundColor: const Color.fromARGB(247, 246, 244, 255),
   buttonTheme: ButtonThemeData(
     buttonColor: const Color.fromARGB(247, 246, 244, 255),
+  ),
+  textSelectionTheme: const TextSelectionThemeData(
+    cursorColor: Color.fromARGB(255, 37, 136, 96),
+    selectionHandleColor: Color.fromARGB(255, 37, 136, 96),
   ),
 );
