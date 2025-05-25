@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'home.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 final NumberFormat moedaFormat = NumberFormat.currency(
   locale: 'pt_BR',
@@ -28,6 +29,31 @@ class _MyAppState extends State<MyApp> {
     Color.fromARGB(247, 246, 244, 255),
   ];
 
+  @override
+  void initState() {
+    super.initState();
+    _carregarTema();
+  }
+
+  void _carregarTema() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (prefs.containsKey('modoEscuro')) {
+      setState(() {
+        modoEscuro = prefs.getBool('modoEscuro')!;
+        tema = modoEscuro ? ThemeMode.dark : ThemeMode.light;
+        iconeDefault = modoEscuro ? Icon(Icons.dark_mode) : Icon(Icons.light_mode);
+      });
+    } else {
+      // Se não houver preferência salva, use o padrão do sistema
+      final Brightness brightness = WidgetsBinding.instance.platformDispatcher.platformBrightness;
+      setState(() {
+        modoEscuro = brightness == Brightness.dark;
+        tema = modoEscuro ? ThemeMode.dark : ThemeMode.light;
+        iconeDefault = modoEscuro ? Icon(Icons.dark_mode) : Icon(Icons.light_mode);
+      });
+    }
+  }
+
   void trocarTema() {
     setState(() {
       tema = modoEscuro ? ThemeMode.dark : ThemeMode.light;
@@ -37,6 +63,7 @@ class _MyAppState extends State<MyApp> {
       } else {
         iconeDefault = Icon(Icons.light_mode);
       }
+      salvarTema(modoEscuro);
     });
   }
 
@@ -52,60 +79,6 @@ class _MyAppState extends State<MyApp> {
         tema: tema,
         trocarTema: trocarTema,
         iconeDefault: iconeDefault,
-      ),
-    );
-  }
-}
-
-class Splash extends StatefulWidget {
-  final VoidCallback trocarTema;
-  final ThemeMode tema;
-  final Icon iconeDefault;
-  const Splash({
-    super.key,
-    required this.tema,
-    required this.trocarTema,
-    required this.iconeDefault,
-  });
-
-  @override
-  SplashState createState() => SplashState();
-}
-
-class SplashState extends State<Splash> {
-  @override
-  void initState() {
-    super.initState();
-    Future.delayed(Duration(seconds: 3), () {
-      if (!mounted) return;
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder:
-              (context) => TelaInicial(
-                tema: widget.tema,
-                trocarTema: widget.trocarTema,
-                iconeDefault: widget.iconeDefault,
-              ),
-        ),
-      );
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Image.asset(
-              'assets/images/splash-logo.png',
-              width: 300,
-              height: 300,
-            ),
-          ],
-        ),
       ),
     );
   }
@@ -138,7 +111,7 @@ ThemeData temaEscuro = ThemeData(
 
 ThemeData temaClaro = ThemeData(
   appBarTheme: const AppBarTheme(
-    backgroundColor: Color.fromARGB(247, 246, 244, 255),
+    backgroundColor: Color.fromARGB(255, 246, 244, 255),
     titleTextStyle: TextStyle(color: Colors.black),
     actionsIconTheme: IconThemeData(color: Color.fromARGB(255, 37, 34, 34)),
     iconTheme: IconThemeData(color: Colors.black),
@@ -148,12 +121,18 @@ ThemeData temaClaro = ThemeData(
     bodyMedium: TextStyle(color: Colors.black),
     bodyLarge: TextStyle(color: Colors.black),
   ),
-  scaffoldBackgroundColor: const Color.fromARGB(247, 246, 244, 255),
+  scaffoldBackgroundColor: const Color.fromARGB(255, 246, 244, 255),
   buttonTheme: ButtonThemeData(
-    buttonColor: const Color.fromARGB(247, 246, 244, 255),
+    buttonColor: const Color.fromARGB(255, 246, 244, 255),
   ),
   textSelectionTheme: const TextSelectionThemeData(
     cursorColor: Color.fromARGB(255, 37, 136, 96),
     selectionHandleColor: Color.fromARGB(255, 37, 136, 96),
   ),
 );
+
+// Salvar tema
+Future<void> salvarTema(bool modoEscuro) async {
+  final prefs = await SharedPreferences.getInstance();
+  await prefs.setBool('modoEscuro', modoEscuro);
+}
