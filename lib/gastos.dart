@@ -352,6 +352,9 @@ class _TelaRegistroGastosState extends State<TelaRegistroGastos> {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text('Gasto adicionado!')),
                     );
+                    setState(() {
+                      FocusScope.of(context).requestFocus(FocusNode());
+                    });
                   },
                   child: Text(
                     'Adicionar',

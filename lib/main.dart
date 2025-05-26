@@ -40,15 +40,15 @@ class _MyAppState extends State<MyApp> {
     if (prefs.containsKey('modoEscuro')) {
       setState(() {
         modoEscuro = prefs.getBool('modoEscuro')!;
-        tema = modoEscuro ? ThemeMode.dark : ThemeMode.light;
+        tema = modoEscuro ? ThemeMode.light : ThemeMode.dark;
         iconeDefault = modoEscuro ? Icon(Icons.dark_mode) : Icon(Icons.light_mode);
       });
     } else {
       // Se não houver preferência salva, use o padrão do sistema
       final Brightness brightness = WidgetsBinding.instance.platformDispatcher.platformBrightness;
       setState(() {
-        modoEscuro = brightness == Brightness.dark;
-        tema = modoEscuro ? ThemeMode.dark : ThemeMode.light;
+        modoEscuro = brightness == Brightness.light;
+        tema = modoEscuro ? ThemeMode.light : ThemeMode.dark;
         iconeDefault = modoEscuro ? Icon(Icons.dark_mode) : Icon(Icons.light_mode);
       });
     }
